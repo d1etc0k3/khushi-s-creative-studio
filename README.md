@@ -1,73 +1,132 @@
-# Welcome to your Lovable project
+# Khushi Gupta - Animation & Game Design Portfolio
 
-## Project info
+A stunning, interactive portfolio website built with React, Tailwind CSS, Framer Motion, and React Three Fiber.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Features
 
-## How can I edit this code?
+- **Animated Homepage** with typewriter effect cycling through "I Design", "I Create", "I Build"
+- **Floating View** - Interactive experience with a cute animated character and floating project bubbles
+- **Standard Grid View** - Classic 2x2 project grid layout
+- **3D Model Viewer** - Interactive viewer with orbit controls, auto-rotation, and HDR lighting
+- **Smooth Animations** - Page transitions, hover effects, and parallax effects throughout
+- **Dark Cinematic Theme** - Purple/violet accent lighting with glass morphism effects
 
-There are several ways of editing your application.
+## 🚀 Getting Started
 
-**Use Lovable**
+### Prerequisites
+- Node.js 18+ 
+- npm or bun
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Install dependencies
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Build for Production
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+## 📁 Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/
+│   ├── CuteCharacter.tsx    # Animated character with eye-tracking
+│   ├── FloatingBubble.tsx   # Project bubble component
+│   ├── ParticleBackground.tsx
+│   ├── HeroSection.tsx
+│   ├── ProjectsSection.tsx
+│   ├── ModelViewer.tsx      # React Three Fiber 3D viewer
+│   └── ContentTabs.tsx      # Animated tab interface
+├── data/
+│   └── projects.ts          # Project data configuration
+├── hooks/
+│   ├── useMousePosition.ts  # Mouse tracking hook
+│   └── useTypewriter.ts     # Typewriter animation hook
+├── pages/
+│   ├── HomePage.tsx
+│   ├── FloatingViewPage.tsx
+│   ├── ProjectsPage.tsx
+│   ├── ProjectDetailPage.tsx
+│   └── NotFound.tsx
+└── App.tsx
+```
 
-## What technologies are used for this project?
+## 🎨 Customization
 
-This project is built with:
+### Replace Portrait Image
+Replace the portrait image placeholder:
+- Add your image to `public/images/portrait.jpg`
+- Update the `src` in `HeroSection.tsx`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Add Your Projects
+Edit `src/data/projects.ts`:
 
-## How can I deploy this project?
+```typescript
+{
+  id: "your-project-id",
+  title: "Project Title",
+  shortDescription: "Brief description",
+  type: "3d" | "image",
+  modelPath: "/models/your-model.glb", // for 3D projects
+  imagePath: "/images/project-image.jpg",
+  concept: "Detailed concept description...",
+  uvDescription: "UV mapping details...",
+  renders: ["/images/render-1.jpg", "/images/render-2.jpg"]
+}
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Add 3D Models
+1. Place `.glb` files in `public/models/`
+2. Update `modelPath` in your project data
+3. The viewer will automatically load and display them
 
-## Can I connect a custom domain to my Lovable project?
+### Change Theme Colors
+Edit `src/index.css` CSS variables:
 
-Yes, you can!
+```css
+--primary: 263 70% 50%;     /* Purple hue */
+--accent: 263 60% 60%;      /* Lighter purple */
+--glow-primary: 263 70% 50%; /* Glow color */
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🛠️ Technologies
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- **React 18** + TypeScript
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **React Three Fiber** - 3D graphics
+- **React Router** - Navigation
+- **Lucide React** - Icons
+
+## 📱 Responsive Design
+
+Fully responsive across:
+- Desktop (1920px+)
+- Tablet (768px - 1024px)
+- Mobile (320px - 768px)
+
+## 🚀 Deployment
+
+Deploy to Vercel, Netlify, or any static hosting:
+
+```bash
+npm run build
+# Deploy the `dist` folder
+```
+
+## 📄 License
+
+MIT License - Feel free to use for personal or commercial projects.
+
+---
+
+Built with ❤️ for Khushi Gupta's Animation & Game Design portfolio.
