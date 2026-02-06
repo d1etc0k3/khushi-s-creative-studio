@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import { projects } from "@/data/projects";
 import { ModelViewer } from "@/components/ModelViewer";
 import { ContentTabs } from "@/components/ContentTabs";
@@ -8,81 +9,64 @@ import { ContentTabs } from "@/components/ContentTabs";
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const project = projects.find((p) => p.id === id);
+  const [activeTab, setActiveTab] = useState("renders");
 
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
 
+  // Determine which model to display based on active tab
+  const getActiveModelPath = () => {
+    switch (activeTab) {
+      case "mesh":
+        return project.meshModelPath || project.modelPath || "";
+      default:
+        return project.modelPath || "";
+    }
+  };
+
   const tabs = [
-    {
-      id: "concept",
-      label: "Concept",
-      content: (
-        <div className="space-y-4">
-          <h3 className="font-display text-lg font-semibold text-foreground">
-            Project Concept
-          </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {project.concept}
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "uv",
-      label: "UV Pack-Unwrap",
-      content: (
-        <div className="space-y-4">
-          <h3 className="font-display text-lg font-semibold text-foreground">
-            UV Mapping & Texturing
-          </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {project.uvDescription}
-          </p>
-          {/* Placeholder for UV images */}
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="aspect-square glass rounded-xl overflow-hidden">
-              <img
-                src="/placeholder.svg"
-                alt="UV Layout"
-                className="w-full h-full object-cover opacity-60"
-              />
-            </div>
-            <div className="aspect-square glass rounded-xl overflow-hidden">
-              <img
-                src="/placeholder.svg"
-                alt="Texture Map"
-                className="w-full h-full object-cover opacity-60"
-              />
-            </div>
-          </div>
-        </div>
-      ),
-    },
     {
       id: "renders",
       label: "Renders",
       content: (
         <div className="space-y-4">
           <h3 className="font-display text-lg font-semibold text-foreground">
-            Final Renders
+            Renders
           </h3>
-          <div className="grid gap-4">
-            {project.renders.map((render, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="aspect-video glass rounded-xl overflow-hidden"
-              >
-                <img
-                  src={render}
-                  alt={`Render ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            ))}
+          <p className="text-muted-foreground leading-relaxed">
+            {project.renders}
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: "mesh",
+      label: "Mesh",
+      content: (
+        <div className="space-y-4">
+          <h3 className="font-display text-lg font-semibold text-foreground">
+            Mesh
+          </h3>
+          <p className="text-muted-foreground leading-relaxed">
+            {project.mesh}
+          </p>
+          {/* Placeholder for mesh images */}
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="aspect-square glass rounded-xl overflow-hidden">
+              <img
+                src="/placeholder.svg"
+                alt="Mesh Layout"
+                className="w-full h-full object-cover opacity-60"
+              />
+            </div>
+            <div className="aspect-square glass rounded-xl overflow-hidden">
+              <img
+                src="/placeholder.svg"
+                alt="Mesh Map"
+                className="w-full h-full object-cover opacity-60"
+              />
+            </div>
           </div>
         </div>
       ),
@@ -95,7 +79,7 @@ export default function ProjectDetailPage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen px-6 py-20"
+      className="min-h-screen px-4 py-4 flex flex-col"
     >
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none">
@@ -118,36 +102,33 @@ export default function ProjectDetailPage() {
         </Link>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10 flex-1 flex flex-col">
         {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-4 flex-shrink-0"
         >
-          <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary rounded-full mb-4">
-            {project.type === "3d" ? "3D Model" : "2D Artwork"}
-          </span>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground">
+          <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
             {project.title}
           </h1>
-          <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="mt-2 text-muted-foreground text-sm max-w-2xl mx-auto">
             {project.shortDescription}
           </p>
         </motion.div>
 
         {/* Two-column layout */}
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-4 items-stretch flex-1 min-h-0">
           {/* Left - Viewer */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="sticky top-24"
+            className="flex-1 min-h-0"
           >
             {project.type === "3d" ? (
-              <div className="aspect-square">
-                <ModelViewer modelPath={project.modelPath || ""} />
+              <div className="h-full min-h-[300px]">
+                <ModelViewer modelPath={getActiveModelPath()} lighting={project.lighting} tabType={activeTab as "renders" | "mesh"} />
               </div>
             ) : (
               <div className="aspect-square glass rounded-2xl overflow-hidden">
@@ -165,9 +146,9 @@ export default function ProjectDetailPage() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="glass rounded-2xl p-6"
+            className="glass rounded-2xl p-4 overflow-y-auto h-full min-h-0"
           >
-            <ContentTabs tabs={tabs} />
+            <ContentTabs tabs={tabs} onActiveTabChange={setActiveTab} />
           </motion.div>
         </div>
       </div>

@@ -18,7 +18,7 @@ export function ProjectsSection() {
         </h2>
         
         <p className="text-muted-foreground text-lg mb-12">
-          Choose how you'd like to explore my work
+          <b>Choose how you'd like to explore my work</b>
         </p>
 
         {/* View options */}

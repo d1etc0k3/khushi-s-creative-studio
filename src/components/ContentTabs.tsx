@@ -10,10 +10,16 @@ interface Tab {
 
 interface ContentTabsProps {
   tabs: Tab[];
+  onActiveTabChange?: (tabId: string) => void;
 }
 
-export function ContentTabs({ tabs }: ContentTabsProps) {
+export function ContentTabs({ tabs, onActiveTabChange }: ContentTabsProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "");
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    onActiveTabChange?.(tabId);
+  };
 
   return (
     <div className="w-full">
@@ -22,7 +28,7 @@ export function ContentTabs({ tabs }: ContentTabsProps) {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             className={cn(
               "relative flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
               activeTab === tab.id

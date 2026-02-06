@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 
 export function HeroSection() {
   const { displayText } = useTypewriter({
-    words: ["I Design", "I Create", "I Build"],
+    words: ["I Design.", "I Create.", "I Build."],
     typingSpeed: 120,
     deletingSpeed: 80,
-    pauseDuration: 2500,
+    pauseDuration: 2000,
   });
 
   return (
@@ -20,16 +20,16 @@ export function HeroSection() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative"
         >
-          <div className="relative aspect-[3/4] max-w-md mx-auto">
+          <div className="relative aspect-[3/4] max-w-sm mx-auto">
             {/* Glow effect behind image */}
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
             
             {/* Portrait container */}
             <div className="relative glass rounded-2xl overflow-hidden glow-soft">
               <img
-                src="/placeholder.svg"
-                alt="Khushi Gupta"
-                className="w-full h-full object-cover"
+              src="/images/bla.jpeg"
+              alt="Khushi Gupta"
+              className="w-full h-full object-cover"
               />
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -52,14 +52,15 @@ export function HeroSection() {
 
           {/* Name */}
           <h2 className="text-2xl md:text-3xl font-display text-foreground mb-4">
-            Khushi Gupta
+            <b>Khushi Gupta</b>
+
           </h2>
 
           {/* Introduction */}
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
-            Animation & Game Design student at World University of Design, 
-            passionate about bringing imaginative worlds to life through 
-            3D modeling, texturing, and environment design.
+            <b>Animation & Game Design student at World University of Design,</b> 
+            <b>passionate about bringing imaginative worlds to life through </b> 
+            <b>3D modeling, texturing, and environment design.</b>
           </p>
 
           {/* Skills badges */}
@@ -68,7 +69,7 @@ export function HeroSection() {
               (skill) => (
                 <span
                   key={skill}
-                  className="px-4 py-2 glass rounded-full text-sm text-accent"
+                  className="px-4 py-2 glass rounded-full text-sm text-accent font-bold"
                 >
                   {skill}
                 </span>
@@ -90,7 +91,7 @@ export function HeroSection() {
                 document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              <span className="text-lg">Explore My Work</span>
+              <span className="text-lg font-bold">Explore My Work</span>
               <motion.span
                 animate={{ y: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}

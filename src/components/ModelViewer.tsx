@@ -1,10 +1,33 @@
 import { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, Html } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, Html, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+
+interface LightingConfig {
+  ambientIntensity: number;
+  ambientColor: string;
+  directionalIntensity: number;
+  directionalColor: string;
+  directionalPosition: [number, number, number];
+  pointLight1Intensity: number;
+  pointLight1Color: string;
+  pointLight1Position: [number, number, number];
+  pointLight2Intensity: number;
+  pointLight2Color: string;
+  pointLight2Position: [number, number, number];
+}
 
 interface ModelViewerProps {
   modelPath: string;
+  lighting?: LightingConfig;
+  tabType?: "renders" | "mesh";
+}
+
+interface CameraConfig {
+  position: [number, number, number];
+  fov: number;
+  minDistance: number;
+  maxDistance: number;
 }
 
 function LoadingSpinner() {
@@ -18,21 +41,42 @@ function LoadingSpinner() {
   );
 }
 
-function PlaceholderModel() {
-  const meshRef = useRef<THREE.Mesh>(null);
+function PlaceholderModel({ modelPath }: { modelPath: string }) {
+  const groupRef = useRef<THREE.Group>(null);
   const [isInteracting, setIsInteracting] = useState(false);
   const lastInteractionTime = useRef(Date.now());
+  const { scene } = useGLTF(modelPath);
+
+  useEffect(() => {
+    if (groupRef.current && scene) {
+      // Clear the group first
+      while (groupRef.current.children.length > 0) {
+        groupRef.current.remove(groupRef.current.children[0]);
+      }
+
+      // Reset group position and rotation to origin
+      groupRef.current.position.set(0, 0, 0);
+      groupRef.current.rotation.set(0, 0, 0);
+
+      // Clone the scene and add it to the group
+      const clonedScene = scene.clone();
+      
+      // Calculate bounding box to center the model
+      const box = new THREE.Box3().expandByObject(clonedScene);
+      const center = box.getCenter(new THREE.Vector3());
+      
+      // Center the model at the origin
+      clonedScene.position.copy(center).multiplyScalar(-1);
+      
+      groupRef.current.add(clonedScene);
+    }
+  }, [scene, modelPath]);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!groupRef.current) return;
 
-    // Auto-rotate when not interacting
-    if (!isInteracting) {
-      meshRef.current.rotation.y += 0.005;
-    }
-
-    // Subtle floating animation
-    meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+    // Rotate the model about its own axis
+    groupRef.current.rotation.y += 0.005;
   });
 
   useEffect(() => {
@@ -59,45 +103,82 @@ function PlaceholderModel() {
     };
   }, []);
 
-  return (
-    <mesh ref={meshRef} castShadow>
-      {/* Placeholder geometric shape */}
-      <icosahedronGeometry args={[1, 1]} />
-      <meshStandardMaterial
-        color="#8B5CF6"
-        metalness={0.3}
-        roughness={0.4}
-        emissive="#8B5CF6"
-        emissiveIntensity={0.1}
-      />
-    </mesh>
-  );
+  return <group ref={groupRef} />;
 }
 
-export function ModelViewer({ modelPath }: ModelViewerProps) {
+export function ModelViewer({ modelPath, lighting, tabType = "renders" }: ModelViewerProps) {
+  // Default lighting config (neutral)
+  const defaultLighting: LightingConfig = {
+    ambientIntensity: 0.8,
+    ambientColor: "#FFFFFF",
+    directionalIntensity: 1.2,
+    directionalColor: "#FFFFFF",
+    directionalPosition: [5, 5, 5],
+    pointLight1Intensity: 0.6,
+    pointLight1Color: "#FFFFFF",
+    pointLight1Position: [-5, 3, -5],
+    pointLight2Intensity: 0.5,
+    pointLight2Color: "#FFFFFF",
+    pointLight2Position: [0, 2, 8],
+  };
+
+  // Camera configs per tab
+  const cameraConfigs: Record<string, CameraConfig> = {
+    renders: {
+      position: [16, 8, 20],
+      fov: 50,
+      minDistance: 1,
+      maxDistance: 50,
+    },
+    mesh: {
+      position: [128, 100, 180],
+      fov: 50,
+      minDistance: 1,
+      maxDistance: 500,
+    },
+  };
+
+  const config = lighting || defaultLighting;
+  const cameraConfig = cameraConfigs[tabType];
+
+  // Adjust lighting intensity for mesh tab
+  const adjustedConfig: LightingConfig = {
+    ...config,
+    ambientIntensity: tabType === "mesh" ? config.ambientIntensity * 0.6 : config.ambientIntensity,
+    directionalIntensity: tabType === "mesh" ? config.directionalIntensity * 0.6 : config.directionalIntensity,
+    pointLight1Intensity: tabType === "mesh" ? config.pointLight1Intensity * 0.6 : config.pointLight1Intensity,
+    pointLight2Intensity: tabType === "mesh" ? config.pointLight2Intensity * 0.6 : config.pointLight2Intensity,
+  };
+
+  // Use tabType as part of the key to reset canvas state when tab changes
+  const canvasKey = `${modelPath}-${tabType}`;
+
   return (
     <div className="w-full h-full min-h-[400px] glass rounded-2xl overflow-hidden">
       <Canvas
+        key={canvasKey}
         shadows
-        camera={{ position: [3, 2, 5], fov: 45 }}
+        camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
         gl={{ antialias: true }}
       >
         <Suspense fallback={<LoadingSpinner />}>
           {/* Lighting setup */}
-          <ambientLight intensity={0.4} />
+          <ambientLight intensity={adjustedConfig.ambientIntensity} color={adjustedConfig.ambientColor} />
           <directionalLight
-            position={[5, 5, 5]}
-            intensity={1}
+            position={adjustedConfig.directionalPosition}
+            intensity={adjustedConfig.directionalIntensity}
+            color={adjustedConfig.directionalColor}
             castShadow
             shadow-mapSize={[1024, 1024]}
           />
-          <pointLight position={[-5, 2, -5]} intensity={0.5} color="#A78BFA" />
+          <pointLight position={adjustedConfig.pointLight1Position} intensity={adjustedConfig.pointLight1Intensity} color={adjustedConfig.pointLight1Color} />
+          <pointLight position={adjustedConfig.pointLight2Position} intensity={adjustedConfig.pointLight2Intensity} color={adjustedConfig.pointLight2Color} />
 
           {/* Environment for reflections */}
-          <Environment preset="studio" />
+          <Environment preset="sunset" />
 
           {/* Model placeholder - in real app, load actual GLB */}
-          <PlaceholderModel />
+          <PlaceholderModel modelPath={modelPath} />
 
           {/* Ground shadow */}
           <ContactShadows
@@ -112,8 +193,8 @@ export function ModelViewer({ modelPath }: ModelViewerProps) {
           <OrbitControls
             enablePan={false}
             enableZoom={true}
-            minDistance={2}
-            maxDistance={10}
+            minDistance={cameraConfig.minDistance}
+            maxDistance={cameraConfig.maxDistance}
             autoRotate={false}
           />
         </Suspense>
