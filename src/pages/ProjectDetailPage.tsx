@@ -94,7 +94,7 @@ export default function ProjectDetailPage() {
         className="fixed top-6 left-6 z-50"
       >
         <Link
-          to="/projects"
+          to="/floating"
           className="flex items-center gap-2 px-4 py-2 glass rounded-full hover:glow-soft transition-all group"
         >
           <ArrowLeft className="w-4 h-4 text-primary group-hover:text-accent transition-colors" />

@@ -6,7 +6,6 @@ A stunning, interactive portfolio website built with React, Tailwind CSS, Framer
 
 - **Animated Homepage** with typewriter effect cycling through "I Design", "I Create", "I Build"
 - **Floating View** - Interactive experience with a cute animated character and floating project bubbles
-- **Standard Grid View** - Classic 2x2 project grid layout
 - **3D Model Viewer** - Interactive viewer with orbit controls, auto-rotation, and HDR lighting
 - **Smooth Animations** - Page transitions, hover effects, and parallax effects throughout
 - **Dark Cinematic Theme** - Purple/violet accent lighting with glass morphism effects

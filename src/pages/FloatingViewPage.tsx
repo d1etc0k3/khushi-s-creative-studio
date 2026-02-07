@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { CuteCharacter } from "@/components/CuteCharacter";
 import { FloatingBubble } from "@/components/FloatingBubble";
-import { ParticleBackground } from "@/components/ParticleBackground";
 import { projects } from "@/data/projects";
+import { useState } from "react";
 
 export default function FloatingViewPage() {
+  const [hoveringBubble, setHoveringBubble] = useState(false);
+  const floatingProjects = projects.slice(0, 4);
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
@@ -15,7 +18,11 @@ export default function FloatingViewPage() {
       transition={{ duration: 0.5 }}
       className="relative min-h-screen overflow-hidden"
     >
-      <ParticleBackground />
+      {/* Ambient glow backdrop */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full blur-[180px]" />
+        <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-accent/10 rounded-full blur-[180px]" />
+      </div>
 
       {/* Back button */}
       <motion.div
@@ -38,10 +45,10 @@ export default function FloatingViewPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-40"
+        className="fixed top-6 inset-x-0 z-40 flex justify-center"
       >
-        <h1 className="font-display text-xl md:text-2xl font-bold text-gradient">
-          My Projects
+        <h1 className="font-display text-2xl md:text-5xl font-bold text-gradient text-center pb-2">
+          Projects
         </h1>
       </motion.div>
 
@@ -52,9 +59,6 @@ export default function FloatingViewPage() {
         transition={{ delay: 1 }}
         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40"
       >
-        <p className="text-sm text-muted-foreground text-center">
-          Click on a bubble to view project details
-        </p>
       </motion.div>
 
       {/* Center content area */}
@@ -66,23 +70,20 @@ export default function FloatingViewPage() {
           transition={{ delay: 0.4, type: "spring" }}
           className="relative z-10"
         >
-          <CuteCharacter className="w-48 h-48 md:w-64 md:h-64" />
+          <div className="absolute inset-0 rounded-full bg-primary/30 blur-[80px]" />
+          <CuteCharacter className="w-48 h-48 md:w-64 md:h-64" isHappy={hoveringBubble} />
         </motion.div>
 
         {/* Floating bubbles */}
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6 + index * 0.15, type: "spring" }}
-          >
+        {floatingProjects.map((project, index) => (
+          <div key={project.id}>
             <FloatingBubble
               project={project}
               index={index}
-              totalBubbles={projects.length}
+              totalBubbles={floatingProjects.length}
+              onHoverChange={setHoveringBubble}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </motion.main>

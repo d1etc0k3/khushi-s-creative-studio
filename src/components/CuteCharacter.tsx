@@ -3,14 +3,16 @@ import { useMousePosition } from "@/hooks/useMousePosition";
 
 interface CuteCharacterProps {
   className?: string;
+  isHappy?: boolean;
 }
 
-export function CuteCharacter({ className = "" }: CuteCharacterProps) {
+// Bright, cute-but-professional mascot with eye tracking
+export function CuteCharacter({ className = "", isHappy = false }: CuteCharacterProps) {
   const { normalizedX, normalizedY } = useMousePosition();
 
-  // Calculate eye movement (limited range)
-  const eyeX = normalizedX * 8;
-  const eyeY = normalizedY * 6;
+  // Eye movement range
+  const eyeX = normalizedX * 10;
+  const eyeY = normalizedY * 8;
 
   return (
     <motion.div
@@ -18,175 +20,154 @@ export function CuteCharacter({ className = "" }: CuteCharacterProps) {
       animate={{ y: [0, -8, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
     >
-      <svg
-        viewBox="0 0 200 200"
-        className="w-full h-full drop-shadow-2xl"
-        style={{ filter: "drop-shadow(0 0 30px hsl(263 70% 50% / 0.3))" }}
-      >
-        {/* Body - rounded blob shape */}
+      <svg viewBox="0 0 220 240" className="w-full h-full drop-shadow-2xl">
+        <defs>
+          <radialGradient id="bodyGlow" cx="50%" cy="35%" r="70%">
+            <stop offset="0%" stopColor="hsl(var(--primary) / 0.35)" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+          <linearGradient id="suit" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--card) / 0.9)" />
+            <stop offset="100%" stopColor="hsl(var(--card) / 0.7)" />
+          </linearGradient>
+        </defs>
+
+        {/* Glow aura */}
+        <circle cx="110" cy="110" r="90" fill="url(#bodyGlow)" />
+
+        {/* Penguin body */}
         <motion.ellipse
-          cx="100"
-          cy="120"
-          rx="70"
-          ry="60"
-          className="fill-secondary"
-          animate={{ ry: [60, 62, 60] }}
+          cx="110"
+          cy="150"
+          rx="78"
+          ry="70"
+          fill="hsl(var(--card) / 0.95)"
+          stroke="hsl(var(--primary) / 0.25)"
+          strokeWidth="2.5"
+          animate={{ ry: [70, 73, 70] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Belly */}
+        <ellipse cx="110" cy="155" rx="58" ry="55" fill="white" opacity="0.9" />
+        {/* Flippers */}
+        <path
+          d="M38 150 Q28 145 36 125 Q64 110 70 140 Z"
+          fill="hsl(var(--card) / 0.95)"
+          stroke="hsl(var(--primary) / 0.2)"
+          strokeWidth="2"
+        />
+        <path
+          d="M182 150 Q192 145 184 125 Q156 110 150 140 Z"
+          fill="hsl(var(--card) / 0.95)"
+          stroke="hsl(var(--primary) / 0.2)"
+          strokeWidth="2"
         />
 
         {/* Head */}
         <motion.circle
-          cx="100"
-          cy="80"
-          r="55"
-          className="fill-card"
-          stroke="hsl(263 70% 50% / 0.3)"
-          strokeWidth="2"
-          animate={{ r: [55, 56, 55] }}
+          cx="110"
+          cy="90"
+          r="62"
+          fill="hsl(var(--card) / 0.98)"
+          stroke="hsl(var(--primary) / 0.35)"
+          strokeWidth="3"
+          animate={{ r: [62, 63, 62] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
+        {/* White face patch */}
+        <ellipse cx="110" cy="92" rx="48" ry="46" fill="white" opacity="0.92" />
 
-        {/* Inner glow on head */}
-        <circle
-          cx="85"
-          cy="65"
-          r="30"
-          fill="url(#headGlow)"
-          opacity="0.3"
+        {/* Left eye */}
+        <g>
+          <ellipse cx="80" cy="85" rx="20" ry="22" fill="white" />
+          <motion.circle
+            cx={80 + eyeX}
+            cy={85 + eyeY}
+            r="11"
+            fill="hsl(var(--primary))"
+          />
+          <motion.circle
+            cx={80 + eyeX}
+            cy={85 + eyeY}
+            r="5"
+            fill="hsl(var(--background))"
+          />
+          <motion.circle
+            cx={77 + eyeX * 0.4}
+            cy={82 + eyeY * 0.4}
+            r="3"
+            fill="white"
+          />
+        </g>
+
+        {/* Right eye */}
+        <g>
+        <ellipse cx="140" cy="85" rx="20" ry="22" fill="white" />
+        <motion.circle
+          cx={140 + eyeX}
+          cy={85 + eyeY}
+          r="11"
+          fill="hsl(var(--primary))"
         />
-
-        {/* Left Eye */}
-        <g>
-          {/* Eye socket */}
-          <ellipse cx="75" cy="75" rx="18" ry="20" className="fill-background" />
-          
-          {/* Eye iris */}
           <motion.circle
-            cx={75 + eyeX}
-            cy={75 + eyeY}
-            r="10"
-            className="fill-primary"
-            animate={{ scale: [1, 1, 1] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          />
-          
-          {/* Eye pupil */}
-          <motion.circle
-            cx={75 + eyeX}
-            cy={75 + eyeY}
+            cx={140 + eyeX}
+            cy={85 + eyeY}
             r="5"
-            className="fill-background"
+            fill="hsl(var(--background))"
           />
-          
-          {/* Eye highlight */}
           <motion.circle
-            cx={72 + eyeX * 0.5}
-            cy={72 + eyeY * 0.5}
-            r="3"
-            className="fill-foreground"
-          />
+            cx={137 + eyeX * 0.4}
+            cy={82 + eyeY * 0.4}
+          r="3"
+          fill="white"
+        />
+      </g>
 
-          {/* Blink animation overlay */}
-          <motion.ellipse
-            cx="75"
-            cy="75"
-            rx="18"
-            ry="20"
-            className="fill-card"
-            animate={{
-              scaleY: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9, 0.92, 0.94, 0.96, 1],
-            }}
-            style={{ transformOrigin: "75px 75px" }}
-          />
-        </g>
-
-        {/* Right Eye */}
-        <g>
-          <ellipse cx="125" cy="75" rx="18" ry="20" className="fill-background" />
-          
-          <motion.circle
-            cx={125 + eyeX}
-            cy={75 + eyeY}
-            r="10"
-            className="fill-primary"
-          />
-          
-          <motion.circle
-            cx={125 + eyeX}
-            cy={75 + eyeY}
-            r="5"
-            className="fill-background"
-          />
-          
-          <motion.circle
-            cx={122 + eyeX * 0.5}
-            cy={72 + eyeY * 0.5}
-            r="3"
-            className="fill-foreground"
-          />
-
-          <motion.ellipse
-            cx="125"
-            cy="75"
-            rx="18"
-            ry="20"
-            className="fill-card"
-            animate={{
-              scaleY: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.85, 0.9, 0.92, 0.94, 0.96, 1],
-            }}
-            style={{ transformOrigin: "125px 75px" }}
-          />
-        </g>
-
-        {/* Cute blush marks */}
-        <ellipse cx="55" cy="90" rx="10" ry="5" className="fill-primary/30" />
-        <ellipse cx="145" cy="90" rx="10" ry="5" className="fill-primary/30" />
-
-        {/* Small smile */}
+        {/* Beak */}
         <path
-          d="M 85 100 Q 100 115 115 100"
-          fill="none"
-          className="stroke-muted-foreground"
-          strokeWidth="3"
-          strokeLinecap="round"
+          d="M102 102 L118 102 L110 112 Z"
+          fill="hsl(var(--primary))"
+          stroke="hsl(var(--primary) / 0.7)"
+          strokeWidth="2"
+          strokeLinejoin="round"
         />
 
-        {/* Small sparkles around character */}
-        <motion.g
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <polygon
-            points="35,50 38,55 35,60 32,55"
-            className="fill-accent"
-          />
-          <polygon
-            points="165,45 168,50 165,55 162,50"
-            className="fill-primary"
-          />
-          <polygon
-            points="50,140 53,145 50,150 47,145"
-            className="fill-accent"
-          />
-        </motion.g>
+        {/* Brows */}
+        <path
+          d="M65 62 Q80 58 95 62"
+          stroke="hsl(var(--card) / 0.4)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d="M125 62 Q140 58 155 62"
+          stroke="hsl(var(--card) / 0.4)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          fill="none"
+        />
 
-        {/* Gradient definitions */}
-        <defs>
-          <radialGradient id="headGlow" cx="0.3" cy="0.3" r="0.7">
-            <stop offset="0%" stopColor="hsl(263 70% 70%)" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-        </defs>
+        {/* Feet */}
+        <path d="M78 204 Q82 214 92 214 L72 214 Z" fill="hsl(var(--primary) / 0.8)" />
+        <path d="M128 204 Q132 214 142 214 L122 214 Z" fill="hsl(var(--primary) / 0.8)" />
+
+        {/* Smile */}
+        <motion.path
+          initial={false}
+          animate={{
+            d: isHappy ? "M88 108 Q110 132 132 108" : "M88 112 Q110 112 132 112",
+            strokeWidth: isHappy ? 5 : 4,
+          }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          stroke="hsl(var(--primary))"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Blush */}
+        <ellipse cx="65" cy="105" rx="12" ry="6" fill="hsl(var(--primary) / 0.35)" />
+        <ellipse cx="155" cy="105" rx="12" ry="6" fill="hsl(var(--primary) / 0.35)" />
       </svg>
     </motion.div>
   );

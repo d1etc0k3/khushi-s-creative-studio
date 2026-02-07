@@ -1,51 +1,98 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useMousePosition } from "@/hooks/useMousePosition";
+import { useEffect, useState } from "react";
 import { Project } from "@/data/projects";
 
 interface FloatingBubbleProps {
   project: Project;
   index: number;
   totalBubbles: number;
+  onHoverChange?: (hovering: boolean) => void;
 }
 
-export function FloatingBubble({ project, index, totalBubbles }: FloatingBubbleProps) {
+export function FloatingBubble({ project, index, totalBubbles, onHoverChange }: FloatingBubbleProps) {
   const navigate = useNavigate();
   const { normalizedX, normalizedY } = useMousePosition();
+  const [constraints, setConstraints] = useState({ left: -320, right: 320, top: -240, bottom: 240 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [hasPointerMoved, setHasPointerMoved] = useState(false);
 
-  // Calculate position in a circle around center
-  const angle = (index / totalBubbles) * 2 * Math.PI - Math.PI / 2;
-  const radius = 180; // Distance from center
-  const baseX = Math.cos(angle) * radius;
-  const baseY = Math.sin(angle) * radius;
+  useEffect(() => {
+    const updateConstraints = () => {
+      const padding = 60; // keep bubbles inside viewport
+      const halfW = window.innerWidth / 2 - padding;
+      const halfH = window.innerHeight / 2 - padding;
+      setConstraints({
+        left: -halfW,
+        right: halfW,
+        top: -halfH,
+        bottom: halfH,
+      });
+    };
+    updateConstraints();
+    window.addEventListener("resize", updateConstraints);
+
+    const firstPointer = () => setHasPointerMoved(true);
+    window.addEventListener("pointermove", firstPointer, { once: true });
+
+    return () => {
+      window.removeEventListener("resize", updateConstraints);
+      window.removeEventListener("pointermove", firstPointer);
+    };
+  }, []);
+
+  // Fixed 4-bubble layout: 2 left, 2 right, roughly even vertical spacing
+  const slots = [
+    { x: -440, y: -140 },
+    { x: -220, y: 120 },
+    { x: 360, y: -140 },
+    { x: 220, y: 120 },
+  ];
+  const fallbackAngle = (index / totalBubbles) * 2 * Math.PI - Math.PI / 2;
+  const baseX = slots[index]?.x ?? Math.cos(fallbackAngle) * 200;
+  const baseY = slots[index]?.y ?? Math.sin(fallbackAngle) * 200;
 
   // Parallax effect based on mouse position
   const parallaxFactor = 0.1 + index * 0.02;
-  const parallaxX = normalizedX * 30 * parallaxFactor;
-  const parallaxY = normalizedY * 30 * parallaxFactor;
+  const parallaxX = hasPointerMoved ? normalizedX * 30 * parallaxFactor : 0;
+  const parallaxY = hasPointerMoved ? normalizedY * 30 * parallaxFactor : 0;
 
   return (
     <motion.div
+      initial={false}
       className="absolute cursor-pointer group"
       style={{
         left: `calc(50% + ${baseX}px)`,
         top: `calc(50% + ${baseY}px)`,
         transform: "translate(-50%, -50%)",
       }}
-      animate={{
-        x: parallaxX,
-        y: parallaxY,
-      }}
+      animate={
+        isDragging
+          ? {}
+          : {
+              x: parallaxX,
+              y: parallaxY,
+            }
+      }
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
+      drag
+      dragConstraints={constraints}
+      dragElastic={0.2}
+      dragMomentum={false}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={() => setIsDragging(false)}
+      onHoverStart={() => onHoverChange?.(true)}
+      onHoverEnd={() => onHoverChange?.(false)}
       onClick={() => navigate(`/projects/${project.id}`)}
     >
       {/* Floating animation wrapper */}
       <motion.div
         animate={{
-          y: [0, -15, 0],
+          y: [-28, 28, -28],
         }}
         transition={{
-          duration: 3 + index * 0.5,
+          duration: 4 + index * 0.5,
           repeat: Infinity,
           ease: "easeInOut",
           delay: index * 0.3,

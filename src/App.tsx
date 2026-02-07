@@ -22,7 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/floating" element={<FloatingViewPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
+            {/* <Route path="/projects" element={<ProjectsPage />} /> */}
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

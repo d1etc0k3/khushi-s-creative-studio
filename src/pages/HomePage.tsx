@@ -17,6 +17,9 @@ export default function HomePage() {
         <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-accent/5 rounded-full blur-[150px]" />
       </div>
 
+      {/* Subtle radial dot grid */}
+      <div className="fixed inset-0 pointer-events-none dot-grid-radial opacity-90" />
+
       <HeroSection />
       <ProjectsSection />
     </motion.main>

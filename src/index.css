@@ -102,4 +102,10 @@
     background: hsl(var(--card) / 0.8);
     border-color: hsl(var(--primary) / 0.5);
   }
+
+  .dot-grid-radial {
+    background-image: radial-gradient(circle, hsl(var(--primary)/0.5) 0.5px, transparent 0.5px);
+    background-size: 25px 25px;
+    background-position: center;
+  }
 }
