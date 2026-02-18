@@ -145,6 +145,9 @@ export function FloatingBubble({ project, index, totalBubbles, onHoverChange }: 
           <img
             src={project.imagePath}
             alt={project.title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
           />
 

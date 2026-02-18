@@ -4,11 +4,27 @@ import { ArrowLeft } from "lucide-react";
 import { CuteCharacter } from "@/components/CuteCharacter";
 import { FloatingBubble } from "@/components/FloatingBubble";
 import { projects } from "@/data/projects";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function FloatingViewPage() {
   const [hoveringBubble, setHoveringBubble] = useState(false);
-  const floatingProjects = projects.slice(0, 4);
+  const floatingProjects = useMemo(() => projects.slice(0, 4), []);
+
+  useEffect(() => {
+    // Warm image cache for bubble thumbnails only.
+    const imageCache = floatingProjects.map((project) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = project.imagePath;
+      return img;
+    });
+
+    return () => {
+      imageCache.forEach((img) => {
+        img.src = "";
+      });
+    };
+  }, [floatingProjects]);
 
   return (
     <motion.main

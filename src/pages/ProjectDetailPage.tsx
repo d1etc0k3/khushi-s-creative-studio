@@ -5,6 +5,7 @@ import { useState } from "react";
 import { projects } from "@/data/projects";
 import { ModelViewer } from "@/components/ModelViewer";
 import { ContentTabs } from "@/components/ContentTabs";
+import { withBase } from "@/lib/assets";
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ export default function ProjectDetailPage() {
     return (
       <main className="min-h-screen bg-background">
         <iframe
-          src="/LEVEL%20DESIGN.pdf"
+          src={withBase("level-design.pdf")}
           title="Level Design PDF"
           className="w-full min-h-screen"
           style={{ border: "none" }}
@@ -94,10 +95,10 @@ export default function ProjectDetailPage() {
               <img
                 src={
                   project.id === "project-1"
-                    ? "/images/mesh1.png"
+                    ? withBase("images/mesh1.png")
                     : project.id === "project-3"
-                    ? "/images/mesh11.png"
-                    : "/placeholder.svg"
+                    ? withBase("images/mesh11.png")
+                    : withBase("placeholder.svg")
                 }
                 alt="Mesh view 1"
                 className="w-full h-full object-cover opacity-90"
@@ -107,10 +108,10 @@ export default function ProjectDetailPage() {
               <img
                 src={
                   project.id === "project-1"
-                    ? "/images/mesh2.png"
+                    ? withBase("images/mesh2.png")
                     : project.id === "project-3"
-                    ? "/images/mesh12.png"
-                    : "/placeholder.svg"
+                    ? withBase("images/mesh12.png")
+                    : withBase("placeholder.svg")
                 }
                 alt="Mesh view 2"
                 className="w-full h-full object-cover opacity-90"
@@ -137,7 +138,7 @@ export default function ProjectDetailPage() {
                   {["UV1.png", "UV2.png", "UV3.png"].map((img) => (
                     <div key={img} className="aspect-square glass rounded-lg overflow-hidden">
                       <img
-                        src={`/images/${img}`}
+                        src={withBase(`images/${img}`)}
                         alt={img.replace(".png", "")}
                         className="w-full h-full object-cover"
                       />

@@ -192,7 +192,8 @@ export function ModelViewer({ modelPath, lighting, tabType = "renders", projectI
         key={canvasKey}
         shadows
         camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
-        gl={{ antialias: true }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={<LoadingSpinner />}>
           {/* Lighting setup */}

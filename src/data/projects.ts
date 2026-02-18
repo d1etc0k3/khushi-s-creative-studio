@@ -1,3 +1,5 @@
+import { withBase } from "@/lib/assets";
+
 export interface LightingConfig {
   ambientIntensity: number;
   ambientColor: string;
@@ -31,9 +33,9 @@ export const projects: Project[] = [
     title: "Diorama",
     shortDescription: "Detailed 3D Diorama Scene",
     type: "3d",
-    modelPath: "/models/glb_diorama.glb",
-    meshModelPath: "/models/gltf_meshhh_diorama.glb",
-    imagePath: "/images/dio.jpeg",
+    modelPath: withBase("models/glb_diorama.glb"),
+    meshModelPath: withBase("models/gltf_meshhh_diorama.glb"),
+    imagePath: withBase("images/dio.jpeg"),
     renders:
       "This is a stylized miniature environment exploring vertical architecture within a compact space. The structure rises through layered platforms, balconies, and mechanical elements, creating a dynamic silhouette and strong visual hierarchy.\n\nThe oversized wheel and stacked forms guide the viewer’s eye upward, while grounded base details add realism and weight to the composition. The scene focuses on asymmetry, structural storytelling, and warm cinematic lighting to create an immersive small-scale world.\n\nThis project highlights:\n- Vertical composition\n- Silhouette design\n- Prop detailing\n- Stylized architectural modeling\n- Mood-driven lighting",
     mesh:
@@ -57,7 +59,7 @@ export const projects: Project[] = [
     title: "Level Design",
     shortDescription: "",
     type: "3d",
-    imagePath: "/images/lvl.png",
+    imagePath: withBase("images/lvl.png"),
     renders:
       "",
     mesh:
@@ -68,9 +70,9 @@ export const projects: Project[] = [
     title: "Ford GT",
     shortDescription: "Supercar Model",
     type: "3d",
-    modelPath: "/models/car_mesh.glb",
-    meshModelPath: "/models/car_mesh.glb",
-    imagePath: "/images/car.PNG",
+    modelPath: withBase("models/car_mesh.glb"),
+    meshModelPath: withBase("models/car_mesh.glb"),
+    imagePath: withBase("images/car.PNG"),
     renders:
       "This project is a high-detail 3D recreation of the Ford GT, focusing on precision hard-surface modeling and surface continuity. The model emphasizes accurate proportions, controlled edge flow, and clean panel transitions to achieve a realistic automotive silhouette. Special attention was given to body curvature, aerodynamic cut lines, and reflective surface behavior to maintain smooth highlights across complex forms. The project serves as a study in automotive design, topology control, and material response under studio lighting.",
     mesh:
