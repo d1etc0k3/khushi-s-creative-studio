@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useMousePosition } from "@/hooks/useMousePosition";
 import { useEffect, useState } from "react";
 import { Project } from "@/data/projects";
 
@@ -8,12 +7,20 @@ interface FloatingBubbleProps {
   project: Project;
   index: number;
   totalBubbles: number;
+  normalizedX: number;
+  normalizedY: number;
   onHoverChange?: (hovering: boolean) => void;
 }
 
-export function FloatingBubble({ project, index, totalBubbles, onHoverChange }: FloatingBubbleProps) {
+export function FloatingBubble({
+  project,
+  index,
+  totalBubbles,
+  normalizedX,
+  normalizedY,
+  onHoverChange,
+}: FloatingBubbleProps) {
   const navigate = useNavigate();
-  const { normalizedX, normalizedY } = useMousePosition();
   const [constraints, setConstraints] = useState({ left: -320, right: 320, top: -240, bottom: 240 });
   const [slots, setSlots] = useState([
     { x: -220, y: -140 },

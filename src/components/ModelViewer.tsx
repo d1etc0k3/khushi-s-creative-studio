@@ -192,46 +192,46 @@ export function ModelViewer({ modelPath, lighting, tabType = "renders", projectI
         key={canvasKey}
         shadows
         camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
-        dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: "high-performance" }}
       >
-        <Suspense fallback={<LoadingSpinner />}>
-          {/* Lighting setup */}
-          <ambientLight intensity={adjustedConfig.ambientIntensity} color={adjustedConfig.ambientColor} />
-          <directionalLight
-            position={adjustedConfig.directionalPosition}
-            intensity={adjustedConfig.directionalIntensity}
-            color={adjustedConfig.directionalColor}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-          />
-          <pointLight position={adjustedConfig.pointLight1Position} intensity={adjustedConfig.pointLight1Intensity} color={adjustedConfig.pointLight1Color} />
-          <pointLight position={adjustedConfig.pointLight2Position} intensity={adjustedConfig.pointLight2Intensity} color={adjustedConfig.pointLight2Color} />
+        {/* Lighting setup */}
+        <ambientLight intensity={adjustedConfig.ambientIntensity} color={adjustedConfig.ambientColor} />
+        <directionalLight
+          position={adjustedConfig.directionalPosition}
+          intensity={adjustedConfig.directionalIntensity}
+          color={adjustedConfig.directionalColor}
+          castShadow
+          shadow-mapSize={[1024, 1024]}
+        />
+        <pointLight position={adjustedConfig.pointLight1Position} intensity={adjustedConfig.pointLight1Intensity} color={adjustedConfig.pointLight1Color} />
+        <pointLight position={adjustedConfig.pointLight2Position} intensity={adjustedConfig.pointLight2Intensity} color={adjustedConfig.pointLight2Color} />
 
-          {/* Environment for reflections */}
+        {/* Load environment independently so it does not block first model paint. */}
+        <Suspense fallback={null}>
           <Environment preset="sunset" />
-
-          {/* Model placeholder - in real app, load actual GLB */}
-          <PlaceholderModel modelPath={modelPath} />
-
-          {/* Ground shadow */}
-          <ContactShadows
-            position={[0, -1.5, 0]}
-            opacity={0.4}
-            scale={10}
-            blur={2}
-            far={4}
-          />
-
-          {/* Controls */}
-          <OrbitControls
-            enablePan={false}
-            enableZoom={true}
-            minDistance={cameraConfig.minDistance}
-            maxDistance={cameraConfig.maxDistance}
-            autoRotate={false}
-          />
         </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <PlaceholderModel modelPath={modelPath} />
+        </Suspense>
+
+        {/* Ground shadow */}
+        <ContactShadows
+          position={[0, -1.5, 0]}
+          opacity={0.4}
+          scale={10}
+          blur={2}
+          far={4}
+        />
+
+        {/* Controls */}
+        <OrbitControls
+          enablePan={false}
+          enableZoom={true}
+          minDistance={cameraConfig.minDistance}
+          maxDistance={cameraConfig.maxDistance}
+          autoRotate={false}
+        />
       </Canvas>
 
       {/* Controls hint */}

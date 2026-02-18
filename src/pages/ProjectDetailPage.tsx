@@ -1,11 +1,14 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { projects } from "@/data/projects";
-import { ModelViewer } from "@/components/ModelViewer";
 import { ContentTabs } from "@/components/ContentTabs";
 import { withBase } from "@/lib/assets";
+
+const ModelViewer = lazy(() =>
+  import("@/components/ModelViewer").then((module) => ({ default: module.ModelViewer })),
+);
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -207,12 +210,20 @@ export default function ProjectDetailPage() {
           >
             {project.type === "3d" ? (
               <div className="h-full min-h-[300px]">
-                <ModelViewer
-                  modelPath={getActiveModelPath()}
-                  lighting={project.lighting}
-                  tabType={activeTab as "renders" | "mesh"}
-                  projectId={project.id}
-                />
+                <Suspense
+                  fallback={
+                    <div className="h-full min-h-[300px] glass rounded-2xl flex items-center justify-center text-sm text-muted-foreground">
+                      Loading viewer...
+                    </div>
+                  }
+                >
+                  <ModelViewer
+                    modelPath={getActiveModelPath()}
+                    lighting={project.lighting}
+                    tabType={activeTab as "renders" | "mesh"}
+                    projectId={project.id}
+                  />
+                </Suspense>
               </div>
             ) : (
               <div className="aspect-square glass rounded-2xl overflow-hidden">

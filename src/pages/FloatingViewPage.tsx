@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { CuteCharacter } from "@/components/CuteCharacter";
 import { FloatingBubble } from "@/components/FloatingBubble";
+import { useMousePosition } from "@/hooks/useMousePosition";
 import { projects } from "@/data/projects";
 import { useEffect, useMemo, useState } from "react";
 
 export default function FloatingViewPage() {
   const [hoveringBubble, setHoveringBubble] = useState(false);
+  const { normalizedX, normalizedY } = useMousePosition();
   const floatingProjects = useMemo(() => projects.slice(0, 4), []);
 
   useEffect(() => {
@@ -97,6 +99,8 @@ export default function FloatingViewPage() {
               project={project}
               index={index}
               totalBubbles={floatingProjects.length}
+              normalizedX={normalizedX}
+              normalizedY={normalizedY}
               onHoverChange={setHoveringBubble}
             />
           </div>
