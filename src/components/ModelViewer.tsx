@@ -20,7 +20,8 @@ interface LightingConfig {
 interface ModelViewerProps {
   modelPath: string;
   lighting?: LightingConfig;
-  tabType?: "renders" | "mesh";
+  tabType?: "renders" | "mesh" | "wireframe";
+  projectId?: string;
 }
 
 interface CameraConfig {
@@ -106,7 +107,7 @@ function PlaceholderModel({ modelPath }: { modelPath: string }) {
   return <group ref={groupRef} />;
 }
 
-export function ModelViewer({ modelPath, lighting, tabType = "renders" }: ModelViewerProps) {
+export function ModelViewer({ modelPath, lighting, tabType = "renders", projectId }: ModelViewerProps) {
   // Default lighting config (neutral)
   const defaultLighting: LightingConfig = {
     ambientIntensity: 0.8,
@@ -123,7 +124,7 @@ export function ModelViewer({ modelPath, lighting, tabType = "renders" }: ModelV
   };
 
   // Camera configs per tab
-  const cameraConfigs: Record<string, CameraConfig> = {
+  const baseCameraConfigs: Record<string, CameraConfig> = {
     renders: {
       position: [16, 8, 20],
       fov: 50,
@@ -132,14 +133,46 @@ export function ModelViewer({ modelPath, lighting, tabType = "renders" }: ModelV
     },
     mesh: {
       position: [128, 100, 180],
-      fov: 50,
+      fov: 52,
+      minDistance: 1,
+      maxDistance: 500,
+    },
+    wireframe: {
+      position: [128, 100, 180],
+      fov: 52,
       minDistance: 1,
       maxDistance: 500,
     },
   };
 
+  // Per-project overrides (only apply when projectId matches)
+  const projectCameraOverrides: Record<string, Partial<Record<"renders" | "mesh" | "wireframe", CameraConfig>>> = {
+    "project-3": {
+      // Tighter, closer view for the car mesh
+      mesh: {
+      position: [16,8,20],
+      fov: 15,
+      minDistance: 1,
+      maxDistance: 9,
+    },
+      wireframe: {
+        position: [16,8,20],
+        fov: 15,
+        minDistance: 1,
+        maxDistance: 9,
+      },
+      renders: {
+        position: [16,8,20],
+      fov: 15,
+      minDistance: 1,
+      maxDistance: 9,
+      },
+    },
+  };
+
   const config = lighting || defaultLighting;
-  const cameraConfig = cameraConfigs[tabType];
+  const cameraConfig =
+    projectCameraOverrides[projectId ?? ""]?.[tabType] ?? baseCameraConfigs[tabType];
 
   // Adjust lighting intensity for mesh tab
   const adjustedConfig: LightingConfig = {

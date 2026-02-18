@@ -15,43 +15,70 @@ export function FloatingBubble({ project, index, totalBubbles, onHoverChange }: 
   const navigate = useNavigate();
   const { normalizedX, normalizedY } = useMousePosition();
   const [constraints, setConstraints] = useState({ left: -320, right: 320, top: -240, bottom: 240 });
+  const [slots, setSlots] = useState([
+    { x: -220, y: -140 },
+    { x: -140, y: 120 },
+    { x: 220, y: -140 },
+    { x: 140, y: 120 },
+  ]);
   const [isDragging, setIsDragging] = useState(false);
   const [hasPointerMoved, setHasPointerMoved] = useState(false);
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
   useEffect(() => {
-    const updateConstraints = () => {
-      const padding = 60; // keep bubbles inside viewport
-      const halfW = window.innerWidth / 2 - padding;
-      const halfH = window.innerHeight / 2 - padding;
+    const updateLayout = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const isMobile = width < 768;
+
+      // Match rendered bubble size (w-28/h-28 on mobile, md:w-36/h-36 on larger screens)
+      const bubbleSize = isMobile ? 112 : 144;
+      const padding = isMobile ? 28 : 60;
+
+      const halfW = Math.max(80, width / 2 - padding - bubbleSize / 2);
+      const halfH = Math.max(80, height / 2 - padding - bubbleSize / 2);
+
       setConstraints({
         left: -halfW,
         right: halfW,
         top: -halfH,
         bottom: halfH,
       });
+
+      // Spread bubbles within the safe area so they never spawn off-screen or cover the character
+      const primaryX = Math.min(halfW, isMobile ? 190 : 260);
+      const secondaryX = Math.min(halfW * 0.7, isMobile ? 150 : 200);
+      const spreadY = Math.min(halfH, isMobile ? 150 : 200);
+      const mobileShiftX = isMobile ? -30 : 0; // nudge all bubbles left on small screens
+
+      const extraLeftShift = -80; // additional nudge for left-side bubbles
+      const globalUpShift = -50; // lift all bubbles upward
+
+      setSlots([
+        { x: -primaryX + mobileShiftX + extraLeftShift, y: -spreadY + globalUpShift },
+        { x: -secondaryX + mobileShiftX + extraLeftShift, y: spreadY * 0.8 + globalUpShift },
+        { x: primaryX + mobileShiftX, y: -spreadY + globalUpShift },
+        { x: secondaryX + mobileShiftX, y: spreadY * 0.8 + globalUpShift },
+      ]);
     };
-    updateConstraints();
-    window.addEventListener("resize", updateConstraints);
+    updateLayout();
+    window.addEventListener("resize", updateLayout);
 
     const firstPointer = () => setHasPointerMoved(true);
     window.addEventListener("pointermove", firstPointer, { once: true });
 
     return () => {
-      window.removeEventListener("resize", updateConstraints);
+      window.removeEventListener("resize", updateLayout);
       window.removeEventListener("pointermove", firstPointer);
     };
   }, []);
 
   // Fixed 4-bubble layout: 2 left, 2 right, roughly even vertical spacing
-  const slots = [
-    { x: -440, y: -140 },
-    { x: -220, y: 120 },
-    { x: 360, y: -140 },
-    { x: 220, y: 120 },
-  ];
   const fallbackAngle = (index / totalBubbles) * 2 * Math.PI - Math.PI / 2;
   const baseX = slots[index]?.x ?? Math.cos(fallbackAngle) * 200;
   const baseY = slots[index]?.y ?? Math.sin(fallbackAngle) * 200;
+  const clampedBaseX = clamp(baseX, constraints.left, constraints.right);
+  const clampedBaseY = clamp(baseY, constraints.top, constraints.bottom);
 
   // Parallax effect based on mouse position
   const parallaxFactor = 0.1 + index * 0.02;
@@ -63,8 +90,8 @@ export function FloatingBubble({ project, index, totalBubbles, onHoverChange }: 
       initial={false}
       className="absolute cursor-pointer group"
       style={{
-        left: `calc(50% + ${baseX}px)`,
-        top: `calc(50% + ${baseY}px)`,
+        left: `calc(50% + ${clampedBaseX}px)`,
+        top: `calc(50% + ${clampedBaseY}px)`,
         transform: "translate(-50%, -50%)",
       }}
       animate={

@@ -12,7 +12,7 @@ export function HeroSection() {
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20">
-      <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center -translate-y-5 md:-translate-y-9">
         {/* Left - Portrait */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -20,16 +20,16 @@ export function HeroSection() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative"
         >
-          <div className="relative aspect-[3/4] max-w-sm mx-auto">
+          <div className="relative aspect-[2/3] max-w-[220px] sm:max-w-[260px] md:max-w-sm mx-auto">
             {/* Glow effect behind image */}
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
             
             {/* Portrait container */}
             <div className="relative glass rounded-2xl overflow-hidden glow-soft">
               <img
-              src="/images/bla.jpeg"
+              src="/images/lol.jpg"
               alt="Khushi Gupta"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover "
               />
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />

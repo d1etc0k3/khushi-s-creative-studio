@@ -13,11 +13,11 @@ export function ProjectsSection() {
         className="text-center max-w-3xl"
       >
         {/* Section title */}
-        <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-12">
-          <span className="mr-3">View my</span>
+        <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <span className="leading-tight">View my</span>
           <Link
             to="/floating"
-            className="group inline-flex items-center gap-4 px-8 py-4 glass rounded-2xl hover:glow-primary transition-all duration-300 align-middle"
+            className="group inline-flex items-center gap-3 px-5 py-3 md:px-6 glass rounded-2xl hover:glow-primary transition-all duration-300 align-middle"
           >
             <div className="relative">
               <Sparkles className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
@@ -38,7 +38,9 @@ export function ProjectsSection() {
                 ))}
               </motion.div>
             </div>
-            <span className="text-gradient text-5xl pb-2">Projects</span>
+            <span className="text-gradient text-4xl md:text-5xl pb-1 md:pb-1.5 leading-none">
+              Projects
+            </span>
           </Link>
         </h2>
       </motion.div>

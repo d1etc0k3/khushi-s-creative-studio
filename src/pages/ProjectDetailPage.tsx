@@ -15,10 +15,26 @@ export default function ProjectDetailPage() {
     return <Navigate to="/projects" replace />;
   }
 
+  // Special-case: project-2 should open the Level Design PDF by itself
+  if (project.id === "project-2") {
+    return (
+      <main className="min-h-screen bg-background">
+        <iframe
+          src="/LEVEL%20DESIGN.pdf"
+          title="Level Design PDF"
+          className="w-full min-h-screen"
+          style={{ border: "none" }}
+        />
+      </main>
+    );
+  }
+
   // Determine which model to display based on active tab
   const getActiveModelPath = () => {
     switch (activeTab) {
       case "mesh":
+        return project.meshModelPath || project.modelPath || "";
+      case "wireframe":
         return project.meshModelPath || project.modelPath || "";
       default:
         return project.modelPath || "";
@@ -34,9 +50,30 @@ export default function ProjectDetailPage() {
           <h3 className="font-display text-lg font-semibold text-foreground">
             Renders
           </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {project.renders}
-          </p>
+          {project.id === "project-1" ? (
+            <div className="space-y-3 text-muted-foreground leading-relaxed">
+              <p>
+                This is a stylized miniature environment exploring vertical architecture within a compact space. The structure rises through layered platforms, balconies, and mechanical elements, creating a dynamic silhouette and strong visual hierarchy.
+              </p>
+              <p>
+                The oversized wheel and stacked forms guide the viewer’s eye upward, while grounded base details add realism and weight to the composition. The scene focuses on asymmetry, structural storytelling, and warm cinematic lighting to create an immersive small-scale world.
+              </p>
+              <div>
+                <p className="font-semibold text-foreground mb-2">This project highlights:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Vertical composition</li>
+                  <li>Silhouette design</li>
+                  <li>Prop detailing</li>
+                  <li>Stylized architectural modeling</li>
+                  <li>Mood-driven lighting</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <p className="text-muted-foreground leading-relaxed">
+              {project.renders}
+            </p>
+          )}
         </div>
       ),
     },
@@ -51,26 +88,67 @@ export default function ProjectDetailPage() {
           <p className="text-muted-foreground leading-relaxed">
             {project.mesh}
           </p>
-          {/* Placeholder for mesh images */}
+          {/* Mesh images */}
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="aspect-square glass rounded-xl overflow-hidden">
               <img
-                src="/placeholder.svg"
-                alt="Mesh Layout"
-                className="w-full h-full object-cover opacity-60"
+                src={
+                  project.id === "project-1"
+                    ? "/images/mesh1.png"
+                    : project.id === "project-3"
+                    ? "/images/mesh11.png"
+                    : "/placeholder.svg"
+                }
+                alt="Mesh view 1"
+                className="w-full h-full object-cover opacity-90"
               />
             </div>
             <div className="aspect-square glass rounded-xl overflow-hidden">
               <img
-                src="/placeholder.svg"
-                alt="Mesh Map"
-                className="w-full h-full object-cover opacity-60"
+                src={
+                  project.id === "project-1"
+                    ? "/images/mesh2.png"
+                    : project.id === "project-3"
+                    ? "/images/mesh12.png"
+                    : "/placeholder.svg"
+                }
+                alt="Mesh view 2"
+                className="w-full h-full object-cover opacity-90"
               />
             </div>
           </div>
         </div>
       ),
     },
+    ...(project.id === "project-1"
+      ? [
+          {
+            id: "wireframe",
+            label: "Wireframe",
+            content: (
+              <div className="space-y-4">
+                <h3 className="font-display text-lg font-semibold text-foreground">
+                  Wireframe
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Wireframe pass highlighting topology and UV layout for the diorama model.
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {["UV1.png", "UV2.png", "UV3.png"].map((img) => (
+                    <div key={img} className="aspect-square glass rounded-lg overflow-hidden">
+                      <img
+                        src={`/images/${img}`}
+                        alt={img.replace(".png", "")}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -79,7 +157,7 @@ export default function ProjectDetailPage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen px-4 py-4 flex flex-col"
+      className="min-h-screen px-4 py-4 pt-16 md:pt-6 flex flex-col"
     >
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none">
@@ -128,7 +206,12 @@ export default function ProjectDetailPage() {
           >
             {project.type === "3d" ? (
               <div className="h-full min-h-[300px]">
-                <ModelViewer modelPath={getActiveModelPath()} lighting={project.lighting} tabType={activeTab as "renders" | "mesh"} />
+                <ModelViewer
+                  modelPath={getActiveModelPath()}
+                  lighting={project.lighting}
+                  tabType={activeTab as "renders" | "mesh"}
+                  projectId={project.id}
+                />
               </div>
             ) : (
               <div className="aspect-square glass rounded-2xl overflow-hidden">

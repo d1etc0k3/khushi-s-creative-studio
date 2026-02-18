@@ -29,15 +29,15 @@ export const projects: Project[] = [
   {
     id: "project-1",
     title: "Diorama",
-    shortDescription: "Khushi ka sabse badhia project",
+    shortDescription: "Detailed 3D Diorama Scene",
     type: "3d",
     modelPath: "/models/glb_diorama.glb",
     meshModelPath: "/models/gltf_meshhh_diorama.glb",
-    imagePath: "/placeholder.svg",
+    imagePath: "/images/dio.jpeg",
     renders:
-      "This fantasy character was designed to explore the intersection of medieval armor aesthetics with magical elements. The goal was to create a hero character that feels both grounded and otherworldly, suitable for an action RPG setting.",
+      "This is a stylized miniature environment exploring vertical architecture within a compact space. The structure rises through layered platforms, balconies, and mechanical elements, creating a dynamic silhouette and strong visual hierarchy.\n\nThe oversized wheel and stacked forms guide the viewer’s eye upward, while grounded base details add realism and weight to the composition. The scene focuses on asymmetry, structural storytelling, and warm cinematic lighting to create an immersive small-scale world.\n\nThis project highlights:\n- Vertical composition\n- Silhouette design\n- Prop detailing\n- Stylized architectural modeling\n- Mood-driven lighting",
     mesh:
-      "UV mapping was carefully planned to maximize texture resolution on the face and armor details. The character uses a 4K texture atlas with separate maps for the body, armor, and accessories to ensure crisp details at all viewing distances.",
+      "Clean topology with controlled edge flow and optimized geometry density. UVs were manually unwrapped and organized to ensure efficient texture usage with minimal stretching.",
     lighting: {
       ambientIntensity: 0.22,
       ambientColor: "#FFB366",
@@ -54,41 +54,26 @@ export const projects: Project[] = [
   },
   {
     id: "project-2",
-    title: "Sci-Fi Environment",
-    shortDescription: "Futuristic space station interior with cyberpunk elements",
+    title: "Level Design",
+    shortDescription: "",
     type: "3d",
-    modelPath: "/models/model-2.glb",
-    meshModelPath: "/models/model-2.glb",
-    imagePath: "/placeholder.svg",
+    imagePath: "/images/lvl.png",
     renders:
-      "This environment piece explores the visual language of lived-in sci-fi spaces. Inspired by classic cyberpunk aesthetics, it balances high-tech surfaces with signs of wear and human habitation.",
+      "",
     mesh:
-      "Modular UV layouts were used to create tileable textures for walls and floors, while hero props received unique UV islands. This approach allows the scene to be extended while maintaining consistent visual quality.",
+      "",
   },
   {
     id: "project-3",
-    title: "Stylized Weapon",
-    shortDescription: "Hand-painted stylized sword with magical enchantments",
+    title: "Ford GT",
+    shortDescription: "Supercar Model",
     type: "3d",
-    modelPath: "/models/model-3.glb",
-    meshModelPath: "/models/model-3.glb",
-    imagePath: "/placeholder.svg",
+    modelPath: "/models/car_mesh.glb",
+    meshModelPath: "/models/car_mesh.glb",
+    imagePath: "/images/car.PNG",
     renders:
-      "This weapon design combines traditional sword-making elements with fantasy magic. The blade features ethereal runes that glow with arcane energy, telling the story of an ancient artifact.",
+      "This project is a high-detail 3D recreation of the Ford GT, focusing on precision hard-surface modeling and surface continuity. The model emphasizes accurate proportions, controlled edge flow, and clean panel transitions to achieve a realistic automotive silhouette. Special attention was given to body curvature, aerodynamic cut lines, and reflective surface behavior to maintain smooth highlights across complex forms. The project serves as a study in automotive design, topology control, and material response under studio lighting.",
     mesh:
-      "The UV layout prioritizes the blade and hilt details where players will spend the most time looking. Symmetry was used strategically to double texture resolution on key areas.",
-  },
-  {
-    id: "project-4",
-    title: "Concept Art Collection",
-    shortDescription: "Character and environment concept illustrations",
-    type: "image",
-    modelPath: "/placeholder.svg",
-    meshModelPath: "/placeholder.svg",
-    imagePath: "/placeholder.svg",
-    renders:
-      "This collection showcases concept art exploration for various game projects. Each piece begins with rough sketches and progresses through multiple iterations to final illustrations.",
-    mesh:
-      "Traditional 2D artwork using digital painting techniques. Created primarily in Photoshop with custom brushes designed to emulate traditional media.",
+      "Quad-dominant topology with controlled edge flow to ensure smooth curvature, clean reflections, and sharp panel definition. Geometry was optimized to balance detail and efficiency.",
   },
 ];
