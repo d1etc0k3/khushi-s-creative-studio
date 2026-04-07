@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
@@ -34,6 +34,9 @@ export default function ProjectDetailPage() {
   const [activeRenderIndex, setActiveRenderIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [rendersReady, setRendersReady] = useState(false);
+  const [loadedRenderCount, setLoadedRenderCount] = useState(0);
+  const preloadedProjectsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!project) {
@@ -58,6 +61,76 @@ export default function ProjectDetailPage() {
     }
     setActiveRenderIndex((prev) => prev % renderImages.length);
   }, [renderImages.length]);
+
+  useEffect(() => {
+    if (!project) {
+      return;
+    }
+
+    const total = renderImages.length;
+    const alreadyPreloaded = preloadedProjectsRef.current.has(project.id);
+
+    if (alreadyPreloaded) {
+      setLoadedRenderCount(total);
+      setRendersReady(true);
+      return;
+    }
+
+    if (activeTab !== "renders") {
+      setLoadedRenderCount(0);
+      setRendersReady(false);
+      return;
+    }
+
+    if (total === 0) {
+      setLoadedRenderCount(0);
+      setRendersReady(true);
+      preloadedProjectsRef.current.add(project.id);
+      return;
+    }
+
+    let isCancelled = false;
+    setLoadedRenderCount(0);
+    setRendersReady(false);
+
+    const preloadAllRenders = async () => {
+      let loaded = 0;
+
+      await Promise.all(
+        renderImages.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              const img = new window.Image();
+
+              const handleDone = () => {
+                loaded += 1;
+                if (!isCancelled) {
+                  setLoadedRenderCount(loaded);
+                }
+                resolve();
+              };
+
+              img.onload = handleDone;
+              img.onerror = handleDone;
+              img.src = src;
+            }),
+        ),
+      );
+
+      if (isCancelled) {
+        return;
+      }
+
+      preloadedProjectsRef.current.add(project.id);
+      setRendersReady(true);
+    };
+
+    preloadAllRenders();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [project, renderImages, activeTab]);
 
   useEffect(() => {
     if (!project || typeof window === "undefined") {
@@ -216,43 +289,58 @@ export default function ProjectDetailPage() {
                     onTouchStart={(event) => onTouchStart(event.changedTouches[0]?.clientX ?? 0)}
                     onTouchEnd={(event) => onTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
                   >
-                    <div className="relative w-full h-full overflow-hidden">
-                      <AnimatePresence mode="wait">
-                        <motion.img
-                          key={currentImage}
-                          src={currentImage}
-                          alt={`${project.title} render ${activeRenderIndex + 1}`}
-                          className="absolute inset-0 w-full h-full object-contain"
-                          loading="lazy"
-                          decoding="async"
-                          initial={{ opacity: 0.2, scale: 0.99 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0.2, scale: 1.01 }}
-                          transition={{ duration: 0.28, ease: "easeInOut" }}
+                    {!rendersReady ? (
+                      <div className="h-full w-full flex flex-col items-center justify-center gap-3 bg-background/30">
+                        <motion.div
+                          className="h-10 w-10 rounded-full border-2 border-primary/35 border-t-primary"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
                         />
-                      </AnimatePresence>
-                    </div>
+                        <p className="text-sm text-foreground/90">
+                          Loading renders {Math.min(loadedRenderCount, totalImages)} / {totalImages}
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="relative w-full h-full overflow-hidden">
+                          <AnimatePresence mode="wait">
+                            <motion.img
+                              key={currentImage}
+                              src={currentImage}
+                              alt={`${project.title} render ${activeRenderIndex + 1}`}
+                              className="absolute inset-0 w-full h-full object-contain"
+                              loading="lazy"
+                              decoding="async"
+                              initial={{ opacity: 0.2, scale: 0.99 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0.2, scale: 1.01 }}
+                              transition={{ duration: 0.28, ease: "easeInOut" }}
+                            />
+                          </AnimatePresence>
+                        </div>
 
-                    <button
-                      type="button"
-                      onClick={showPrev}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 hover:bg-background p-2 transition-colors"
-                      aria-label="Previous render"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={showNext}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 hover:bg-background p-2 transition-colors"
-                      aria-label="Next render"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
+                        <button
+                          type="button"
+                          onClick={showPrev}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 hover:bg-background p-2 transition-colors"
+                          aria-label="Previous render"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={showNext}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 hover:bg-background p-2 transition-colors"
+                          aria-label="Next render"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
 
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-background/70 px-3 py-1 text-xs text-foreground/90">
-                      {activeRenderIndex + 1} / {totalImages}
-                    </div>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-background/70 px-3 py-1 text-xs text-foreground/90">
+                          {activeRenderIndex + 1} / {totalImages}
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

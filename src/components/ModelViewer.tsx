@@ -211,6 +211,7 @@ export function ModelViewer({ modelPath, lighting, tabType = "renders", projectI
           <Environment preset="sunset" />
         </Suspense>
 
+
         <Suspense fallback={<LoadingSpinner />}>
           <PlaceholderModel modelPath={modelPath} />
         </Suspense>
