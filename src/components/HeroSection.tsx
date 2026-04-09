@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { LoadingBarOverlay } from "@/components/ui/LoadingBarOverlay";
 
 export function HeroSection() {
+  const [portraitLoading, setPortraitLoading] = useState(true);
   const { displayText } = useTypewriter({
     words: ["I Design.", "I Create.", "I Build."],
     typingSpeed: 120,
@@ -26,10 +29,15 @@ export function HeroSection() {
             
             {/* Portrait container */}
             <div className="relative glass rounded-2xl overflow-hidden glow-soft">
+              <LoadingBarOverlay visible={portraitLoading} label="Loading portrait..." />
               <img
-              src="/images/lol.jpg"
-              alt="Khushi Gupta"
-              className="w-full h-full object-cover "
+                src="/images/lol.webp"
+                alt="Khushi Gupta"
+                className="w-full h-full object-cover "
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setPortraitLoading(false)}
+                onError={() => setPortraitLoading(false)}
               />
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />

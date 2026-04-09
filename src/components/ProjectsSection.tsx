@@ -16,7 +16,7 @@ export function ProjectsSection() {
         <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <span className="leading-tight">View my</span>
           <Link
-            to="/floating"
+            to="/projects"
             className="group inline-flex items-center gap-3 px-5 py-3 md:px-6 glass rounded-2xl hover:glow-primary transition-all duration-300 align-middle"
           >
             <div className="relative">

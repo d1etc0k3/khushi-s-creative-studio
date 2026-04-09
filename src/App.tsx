@@ -27,7 +27,7 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Suspense fallback={PageLoader}><HomePage /></Suspense>} />
-            <Route path="/floating" element={<Suspense fallback={PageLoader}><FloatingViewPage /></Suspense>} />
+            <Route path="/projects" element={<Suspense fallback={PageLoader}><FloatingViewPage /></Suspense>} />
             {/* <Route path="/projects" element={<ProjectsPage />} /> */}
             <Route path="/projects/:id" element={<Suspense fallback={PageLoader}><ProjectDetailPage /></Suspense>} />
             <Route path="*" element={<Suspense fallback={PageLoader}><NotFound /></Suspense>} />

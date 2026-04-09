@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Project } from "@/data/projects";
+import { LoadingBarOverlay } from "@/components/ui/LoadingBarOverlay";
 
 interface FloatingBubbleProps {
   project: Project;
@@ -30,6 +31,7 @@ export function FloatingBubble({
   ]);
   const [isDragging, setIsDragging] = useState(false);
   const [hasPointerMoved, setHasPointerMoved] = useState(false);
+  const [bubbleImageLoading, setBubbleImageLoading] = useState(true);
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
   useEffect(() => {
@@ -79,6 +81,10 @@ export function FloatingBubble({
       window.removeEventListener("pointermove", firstPointer);
     };
   }, []);
+
+  useEffect(() => {
+    setBubbleImageLoading(true);
+  }, [project.imagePath]);
 
   // Fixed 4-bubble layout: 2 left, 2 right, roughly even vertical spacing
   const fallbackAngle = (index / totalBubbles) * 2 * Math.PI - Math.PI / 2;
@@ -148,14 +154,16 @@ export function FloatingBubble({
           }}
           transition={{ type: "spring", stiffness: 300 }}
         >
+          <LoadingBarOverlay visible={bubbleImageLoading} className="rounded-full" label="Loading..." />
           {/* Project image */}
           <img
             src={project.imagePath}
             alt={project.title}
-            loading="eager"
+            loading="lazy"
             decoding="async"
-            fetchPriority="high"
             className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+            onLoad={() => setBubbleImageLoading(false)}
+            onError={() => setBubbleImageLoading(false)}
           />
 
           {/* Gradient overlay */}

@@ -2,8 +2,16 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { projects } from "@/data/projects";
+import { useState } from "react";
+import { LoadingBarOverlay } from "@/components/ui/LoadingBarOverlay";
 
 export default function ProjectsPage() {
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  const markLoaded = (projectId: string) => {
+    setLoadedImages((prev) => (prev[projectId] ? prev : { ...prev, [projectId]: true }));
+  };
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
@@ -69,10 +77,15 @@ export default function ProjectsPage() {
                 >
                   {/* Image container */}
                   <div className="relative aspect-video overflow-hidden">
+                    <LoadingBarOverlay visible={!loadedImages[project.id]} label="Loading preview..." />
                     <img
                       src={project.imagePath}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                      onLoad={() => markLoaded(project.id)}
+                      onError={() => markLoaded(project.id)}
                     />
                     {/* Overlay gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />

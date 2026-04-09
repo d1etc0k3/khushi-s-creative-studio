@@ -3,29 +3,9 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { projects } from "@/data/projects";
+import { LoadingBarOverlay } from "@/components/ui/LoadingBarOverlay";
 
 type LeftTab = "asset-turntable" | "renders";
-
-function readViewState(projectId: string): { tab: LeftTab; renderIndex: number } {
-  if (typeof window === "undefined") {
-    return { tab: "asset-turntable", renderIndex: 0 };
-  }
-
-  try {
-    const raw = window.sessionStorage.getItem(`project-view:${projectId}`);
-    if (!raw) {
-      return { tab: "asset-turntable", renderIndex: 0 };
-    }
-
-    const parsed = JSON.parse(raw) as Partial<{ tab: LeftTab; renderIndex: number }>;
-    return {
-      tab: parsed.tab === "renders" ? "renders" : "asset-turntable",
-      renderIndex: Number.isInteger(parsed.renderIndex) ? Math.max(0, parsed.renderIndex as number) : 0,
-    };
-  } catch {
-    return { tab: "asset-turntable", renderIndex: 0 };
-  }
-}
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -36,16 +16,21 @@ export default function ProjectDetailPage() {
   const [videoFailed, setVideoFailed] = useState(false);
   const [rendersReady, setRendersReady] = useState(false);
   const [loadedRenderCount, setLoadedRenderCount] = useState(0);
+  const [turntableFallbackLoading, setTurntableFallbackLoading] = useState(true);
+  const [pdfLoading, setPdfLoading] = useState(true);
+  const [pdfSessionKey, setPdfSessionKey] = useState(() => Date.now());
   const preloadedProjectsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!project) {
       return;
     }
-    const state = readViewState(project.id);
-    setActiveTab(state.tab);
-    setActiveRenderIndex(state.renderIndex);
+    setActiveTab("asset-turntable");
+    setActiveRenderIndex(0);
     setVideoFailed(false);
+    setTurntableFallbackLoading(true);
+    setPdfLoading(true);
+    setPdfSessionKey(Date.now());
   }, [project]);
 
   const renderImages = useMemo(() => {
@@ -132,19 +117,6 @@ export default function ProjectDetailPage() {
     };
   }, [project, renderImages, activeTab]);
 
-  useEffect(() => {
-    if (!project || typeof window === "undefined") {
-      return;
-    }
-    window.sessionStorage.setItem(
-      `project-view:${project.id}`,
-      JSON.stringify({
-        tab: activeTab,
-        renderIndex: activeRenderIndex,
-      }),
-    );
-  }, [project, activeTab, activeRenderIndex]);
-
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
@@ -180,7 +152,8 @@ export default function ProjectDetailPage() {
     setTouchStartX(null);
   };
 
-  const pdfSrc = `${project.pdfPath}#view=FitH&toolbar=0&navpanes=0&statusbar=0`;
+  const pdfSrc = `${project.pdfPath}${project.pdfPath.includes("?") ? "&" : "?"}session=${pdfSessionKey}#view=FitH&toolbar=0&navpanes=0&statusbar=0`;
+  const renderProgress = totalImages > 0 ? (Math.min(loadedRenderCount, totalImages) / totalImages) * 100 : 100;
 
   return (
     <motion.main
@@ -197,12 +170,7 @@ export default function ProjectDetailPage() {
 
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="fixed top-6 left-6 z-50">
         <Link
-          to="/floating"
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              window.sessionStorage.removeItem(`project-view:${project.id}`);
-            }
-          }}
+          to="/projects"
           className="flex items-center gap-2 px-4 py-2 glass rounded-full hover:glow-soft transition-all group"
         >
           <ArrowLeft className="w-4 h-4 text-primary group-hover:text-accent transition-colors" />
@@ -267,13 +235,16 @@ export default function ProjectDetailPage() {
                         onError={() => setVideoFailed(true)}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-background/50">
+                      <div className="relative w-full h-full flex items-center justify-center bg-background/50">
+                        <LoadingBarOverlay visible={turntableFallbackLoading} label="Loading preview..." />
                         <img
                           src={project.imagePath}
                           alt={`${project.title} preview`}
                           className="max-h-full max-w-full object-contain"
                           loading="lazy"
                           decoding="async"
+                          onLoad={() => setTurntableFallbackLoading(false)}
+                          onError={() => setTurntableFallbackLoading(false)}
                         />
                       </div>
                     )}
@@ -291,14 +262,14 @@ export default function ProjectDetailPage() {
                   >
                     {!rendersReady ? (
                       <div className="h-full w-full flex flex-col items-center justify-center gap-3 bg-background/30">
-                        <motion.div
-                          className="h-10 w-10 rounded-full border-2 border-primary/35 border-t-primary"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                        />
-                        <p className="text-sm text-foreground/90">
-                          Loading renders {Math.min(loadedRenderCount, totalImages)} / {totalImages}
-                        </p>
+                        <div className="w-[76%] max-w-sm space-y-2">
+                          <LoadingBarOverlay
+                            visible
+                            inline
+                            progress={renderProgress}
+                            label={`Loading renders ${Math.min(loadedRenderCount, totalImages)} / ${totalImages}`}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <>
@@ -353,13 +324,17 @@ export default function ProjectDetailPage() {
             transition={{ delay: 0.16 }}
             className="glass rounded-2xl overflow-hidden min-h-[420px] lg:min-h-0 h-[70vh] lg:h-full"
           >
-            <iframe
-              src={pdfSrc}
-              title={`${project.title} PDF`}
-              className="w-full h-full"
-              style={{ border: "none" }}
-              loading="lazy"
-            />
+            <div className="relative h-full w-full">
+              <LoadingBarOverlay visible={pdfLoading} label="Loading PDF..." />
+              <iframe
+                src={pdfSrc}
+                title={`${project.title} PDF`}
+                className="w-full h-full"
+                style={{ border: "none" }}
+                loading="lazy"
+                onLoad={() => setPdfLoading(false)}
+              />
+            </div>
           </motion.section>
         </div>
       </div>
