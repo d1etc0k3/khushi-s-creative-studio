@@ -14,6 +14,7 @@ export default function ProjectDetailPage() {
   const [activeRenderIndex, setActiveRenderIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
   const [rendersReady, setRendersReady] = useState(false);
   const [loadedRenderCount, setLoadedRenderCount] = useState(0);
   const [turntableFallbackLoading, setTurntableFallbackLoading] = useState(true);
@@ -28,10 +29,17 @@ export default function ProjectDetailPage() {
     setActiveTab("asset-turntable");
     setActiveRenderIndex(0);
     setVideoFailed(false);
+    setVideoLoading(true);
     setTurntableFallbackLoading(true);
     setPdfLoading(true);
     setPdfSessionKey(Date.now());
   }, [project]);
+
+  useEffect(() => {
+    if (activeTab === "asset-turntable") {
+      setVideoLoading(true);
+    }
+  }, [activeTab, project?.turntableVideoPath]);
 
   const renderImages = useMemo(() => {
     if (!project) {
@@ -224,16 +232,24 @@ export default function ProjectDetailPage() {
                     className="h-full"
                   >
                     {project.turntableVideoPath && !videoFailed ? (
-                      <video
-                        src={project.turntableVideoPath}
-                        className="w-full h-full object-contain"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                        onError={() => setVideoFailed(true)}
-                      />
+                      <div className="relative w-full h-full">
+                        <LoadingBarOverlay visible={videoLoading} label="Loading turntable..." />
+                        <video
+                          src={project.turntableVideoPath}
+                          className="w-full h-full object-contain"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="none"
+                          onLoadedData={() => setVideoLoading(false)}
+                          onCanPlay={() => setVideoLoading(false)}
+                          onError={() => {
+                            setVideoLoading(false);
+                            setVideoFailed(true);
+                          }}
+                        />
+                      </div>
                     ) : (
                       <div className="relative w-full h-full flex items-center justify-center bg-background/50">
                         <LoadingBarOverlay visible={turntableFallbackLoading} label="Loading preview..." />
