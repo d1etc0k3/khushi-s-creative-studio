@@ -22,7 +22,7 @@ export function ContactSection() {
           </p>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6">
+            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Email</p>
               <a
                 href="mailto:khushi13212gupta@gmail.com"
@@ -31,7 +31,7 @@ export function ContactSection() {
                 khushi13212gupta@gmail.com
               </a>
             </div>
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6">
+            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">ArtStation</p>
               <a
                 href="https://www.artstation.com/yappi_barrraaaa4"
@@ -42,7 +42,7 @@ export function ContactSection() {
                 artstation.com/yappi_barrraaaa4
               </a>
             </div>
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6">
+            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Resume</p>
               <a
                 href="/resume_.pdf"

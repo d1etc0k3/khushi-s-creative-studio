@@ -51,6 +51,16 @@ export default function ProjectDetailPage() {
     }
   }, [activeTab, project?.turntableVideoPath]);
 
+  useEffect(() => {
+    if (isMobile && !project) {
+      return;
+    }
+
+    if (isMobile) {
+      setPdfLoading(false);
+    }
+  }, [isMobile, project]);
+
   const renderImages = useMemo(() => {
     if (!project) {
       return [];
@@ -76,12 +86,6 @@ export default function ProjectDetailPage() {
     if (alreadyPreloaded) {
       setLoadedRenderCount(total);
       setRendersReady(true);
-      return;
-    }
-
-    if (activeTab !== "renders") {
-      setLoadedRenderCount(0);
-      setRendersReady(false);
       return;
     }
 
@@ -142,6 +146,22 @@ export default function ProjectDetailPage() {
   const totalImages = Math.max(renderImages.length, 1);
   const currentImage = renderImages[activeRenderIndex % totalImages] ?? project.imagePath;
 
+  const renderReady = renderImages.length === 0 || rendersReady;
+  const turntableReady = !project.turntableVideoPath || (!videoLoading && !videoFailed) || (videoFailed && !turntableFallbackLoading);
+  const pdfReady = !pdfLoading;
+  const pageLoading = !(renderReady && turntableReady && pdfReady);
+  const totalLoadingSteps = 1 + (project.turntableVideoPath ? 1 : 0) + (renderImages.length > 0 ? 1 : 0);
+  const loadedStepCount = Number(pdfReady) + Number(turntableReady) + Number(renderReady);
+  const pageProgress = totalLoadingSteps > 0 ? Math.round((loadedStepCount / totalLoadingSteps) * 100) : 100;
+
+  const pageLoadingLabel = !pdfReady
+    ? "Loading PDF..."
+    : !turntableReady
+    ? "Loading turntable..."
+    : !renderReady
+    ? "Loading renders..."
+    : "Loading project assets...";
+
   const showPrev = () => {
     setActiveRenderIndex((prev) => (prev - 1 + totalImages) % totalImages);
   };
@@ -200,6 +220,17 @@ export default function ProjectDetailPage() {
       </motion.div>
 
       <div className="max-w-7xl mx-auto relative z-10 flex-1 flex flex-col min-h-0 w-full">
+        {pageLoading ? (
+          <div className="mb-4 px-4 sm:px-0">
+            <LoadingBarOverlay
+              visible
+              inline
+              progress={pageProgress}
+              label={pageLoadingLabel}
+              className="w-full rounded-3xl bg-background/80 px-4 py-4 shadow-lg shadow-black/10"
+            />
+          </div>
+        ) : null}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-4 flex-shrink-0">
           <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{project.title}</h1>
           <p className="mt-2 text-muted-foreground text-sm max-w-2xl mx-auto">{project.shortDescription}</p>
@@ -246,7 +277,6 @@ export default function ProjectDetailPage() {
                   >
                     {project.turntableVideoPath && !videoFailed ? (
                       <div className="relative w-full h-full">
-                        <LoadingBarOverlay visible={videoLoading} label="Loading turntable..." />
                         <video
                           src={project.turntableVideoPath}
                           className="w-full h-full object-contain"
@@ -265,7 +295,6 @@ export default function ProjectDetailPage() {
                       </div>
                     ) : (
                       <div className="relative w-full h-full flex items-center justify-center bg-background/50">
-                        <LoadingBarOverlay visible={turntableFallbackLoading} label="Loading preview..." />
                         <img
                           src={project.imagePath}
                           alt={`${project.title} preview`}
@@ -291,14 +320,7 @@ export default function ProjectDetailPage() {
                   >
                     {!rendersReady ? (
                       <div className="h-full w-full flex flex-col items-center justify-center gap-3 bg-background/30">
-                        <div className="w-[76%] max-w-sm space-y-2">
-                          <LoadingBarOverlay
-                            visible
-                            inline
-                            progress={renderProgress}
-                            label={`Loading renders ${Math.min(loadedRenderCount, totalImages)} / ${totalImages}`}
-                          />
-                        </div>
+                        <p className="text-sm text-muted-foreground">Preparing renders...</p>
                       </div>
                     ) : (
                       <>
@@ -351,18 +373,31 @@ export default function ProjectDetailPage() {
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.16 }}
-            className="glass rounded-2xl overflow-hidden min-h-[460px] lg:min-h-0 h-[82vh] md:h-[74vh] lg:h-full"
+            className="glass rounded-2xl overflow-hidden min-h-[360px] sm:h-[60vh] md:h-[68vh] lg:h-full"
           >
-            <div className="relative h-full w-full overflow-auto overscroll-contain">
-              <LoadingBarOverlay visible={pdfLoading} label="Loading PDF..." />
-              <iframe
-                src={pdfSrc}
-                title={`${project.title} PDF`}
-                className="w-full h-full min-h-[78vh] md:min-h-0"
-                style={{ border: "none" }}
-                loading="lazy"
-                onLoad={() => setPdfLoading(false)}
-              />
+            <div className="relative h-full w-full overflow-hidden">
+              {isMobile ? (
+                <div className="h-full w-full flex flex-col items-center justify-center gap-4 p-6 text-center">
+                  <p className="text-foreground/80">The mobile browser PDF viewer works more reliably when opened directly. Tap below to open the document in a new tab.</p>
+                  <a
+                    href={project.pdfPath}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    Open Project PDF
+                  </a>
+                </div>
+              ) : (
+                <iframe
+                  src={pdfSrc}
+                  title={`${project.title} PDF`}
+                  className="w-full h-full"
+                  style={{ border: "none" }}
+                  loading="lazy"
+                  onLoad={() => setPdfLoading(false)}
+                />
+              )}
             </div>
           </motion.section>
         </div>

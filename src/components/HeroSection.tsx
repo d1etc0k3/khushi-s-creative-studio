@@ -15,10 +15,11 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
-      <div className="absolute right-6 top-6 z-20 flex flex-wrap items-center justify-end gap-3">
+      <div className="absolute inset-x-0 top-4 z-20 flex justify-center gap-3 px-4 sm:justify-end sm:px-0">
         <Button
           variant="default"
           size="sm"
+          className="min-w-[140px]"
           onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" })}
         >
           Explore My Work
@@ -26,18 +27,19 @@ export function HeroSection() {
         <Button
           variant="default"
           size="sm"
+          className="min-w-[140px]"
           onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" })}
         >
           Contact
         </Button>
       </div>
-      <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center -translate-y-5 md:-translate-y-9">
+      <div className="max-w-7xl w-full grid justify-items-center md:justify-items-stretch md:grid-cols-2 gap-12 items-center -translate-y-5 md:-translate-y-9">
         {/* Left - Portrait */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative"
+          className="relative translate-y-5 sm:translate-y-0"
         >
           <div className="relative aspect-[2/3] max-w-[220px] sm:max-w-[260px] md:max-w-sm mx-auto">
             {/* Glow effect behind image */}
@@ -89,7 +91,7 @@ export function HeroSection() {
 
           {/* Skills badges */}
           <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-8">
-            {["Autodesk Maya", "Substance Painter", "Unreal Engine", "Photoshop"].map(
+            {["Autodesk Maya", "Substance Painter", "Unreal Engine", "Photoshop","Unity","KeyShot","Marmoset","Illustrator"].map(
               (skill) => (
                 <span
                   key={skill}

@@ -45,14 +45,14 @@ export function ProjectsSection() {
                   <img
                     src={peekTwo}
                     alt={`${project.title} render preview`}
-                    className="absolute inset-x-10 top-14 h-[46%] w-auto max-w-[82%] mx-auto object-cover rounded-2xl border border-white/25 shadow-2xl rotate-[-7deg] translate-y-[-10px] md:translate-y-[-10 px] md:group-hover:translate-y-[-65px] md:group-hover:rotate-[-11deg] transition-transform duration-500 ease-out"
+                    className="absolute inset-x-10 top-14 h-[46%] w-auto max-w-[82%] mx-auto object-cover rounded-2xl border border-white/25 shadow-2xl rotate-[-7deg] translate-y-[10px] md:translate-y-[10px] md:group-hover:translate-y-[-65px] md:group-hover:rotate-[-11deg] transition-transform duration-500 ease-out"
                     loading="lazy"
                     decoding="async"
                   />
                   <img
                     src={peekOne}
                     alt={`${project.title} featured render`}
-                    className="absolute inset-x-10 top-16 h-[48%] w-auto max-w-[84%] mx-auto object-cover rounded-2xl border border-white/35 shadow-2xl rotate-[6deg] translate-y-[-10px] md:translate-y-[-8px] md:group-hover:translate-y-[-65px] md:group-hover:rotate-[10deg] transition-transform duration-500 ease-out"
+                    className="absolute inset-x-10 top-16 h-[48%] w-auto max-w-[84%] mx-auto object-cover rounded-2xl border border-white/35 shadow-2xl rotate-[6deg] translate-y-[10px] md:translate-y-[12px] md:group-hover:translate-y-[-65px] md:group-hover:rotate-[10deg] transition-transform duration-500 ease-out"
                     loading="lazy"
                     decoding="async"
                   />
@@ -65,7 +65,7 @@ export function ProjectsSection() {
                       <img
                         src={project.imagePath}
                         alt={project.title}
-                        className="h-full w-full object-cover opacity-50 blur-[1.5px]"
+                        className="h-full w-full object-cover opacity-100 blur-[1.5px]"
                         loading="lazy"
                         decoding="async"
                         onLoad={() => markLoaded(project.id)}
