@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { projects } from "@/data/projects";
@@ -9,6 +9,7 @@ type LeftTab = "asset-turntable" | "renders";
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const project = projects.find((p) => p.id === id);
   const [activeTab, setActiveTab] = useState<LeftTab>("asset-turntable");
   const [activeRenderIndex, setActiveRenderIndex] = useState(0);
@@ -139,6 +140,13 @@ export default function ProjectDetailPage() {
     return <Navigate to="/" replace />;
   }
 
+  const handleBackToProjects = () => {
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
   const totalImages = Math.max(renderImages.length, 1);
   const currentImage = renderImages[activeRenderIndex % totalImages] ?? project.imagePath;
 
@@ -206,13 +214,13 @@ export default function ProjectDetailPage() {
       </div>
 
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="fixed top-6 left-6 z-50">
-        <Link
-          to="/"
+        <button
+          onClick={handleBackToProjects}
           className="flex items-center gap-2 px-4 py-2 glass rounded-full hover:glow-soft transition-all group"
         >
           <ArrowLeft className="w-4 h-4 text-primary group-hover:text-accent transition-colors" />
           <span className="text-sm text-foreground">Back to Home</span>
-        </Link>
+        </button>
       </motion.div>
 
       <div className="max-w-7xl mx-auto relative z-10 flex-1 flex flex-col min-h-0 w-full">
