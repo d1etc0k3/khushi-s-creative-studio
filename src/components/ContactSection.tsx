@@ -22,33 +22,33 @@ export function ContactSection() {
           </p>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
+            <div className="space-y-3 min-w-0 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Email</p>
               <a
                 href="mailto:khushi13212gupta@gmail.com"
-                className="text-lg font-semibold text-foreground hover:text-primary transition-colors break-all"
+                className="block text-lg font-semibold text-foreground hover:text-primary transition-colors break-words whitespace-normal"
               >
                 khushi13212gupta@gmail.com
               </a>
             </div>
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
+            <div className="space-y-3 min-w-0 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">ArtStation</p>
               <a
                 href="https://www.artstation.com/yappi_barrraaaa4"
                 target="_blank"
                 rel="noreferrer"
-                className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
+                className="block text-lg font-semibold text-foreground hover:text-primary transition-colors break-words whitespace-normal"
               >
                 artstation.com/yappi_barrraaaa4
               </a>
             </div>
-            <div className="space-y-3 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
+            <div className="space-y-3 min-w-0 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Resume</p>
               <a
                 href="/resume_.pdf"
                 target="_blank"
                 rel="noreferrer"
-                className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
+                className="block text-lg font-semibold text-foreground hover:text-primary transition-colors break-words whitespace-normal"
               >
                 Open Resume
               </a>

@@ -14,10 +14,10 @@ export default function ProjectDetailPage() {
   const [activeRenderIndex, setActiveRenderIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [videoFailed, setVideoFailed] = useState(false);
-  const [videoLoading, setVideoLoading] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [rendersReady, setRendersReady] = useState(false);
   const [loadedRenderCount, setLoadedRenderCount] = useState(0);
-  const [turntableFallbackLoading, setTurntableFallbackLoading] = useState(true);
+  const [turntableFallbackReady, setTurntableFallbackReady] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(true);
   const [pdfSessionKey, setPdfSessionKey] = useState(() => Date.now());
   const [isMobile, setIsMobile] = useState(false);
@@ -39,17 +39,13 @@ export default function ProjectDetailPage() {
     setActiveTab("asset-turntable");
     setActiveRenderIndex(0);
     setVideoFailed(false);
-    setVideoLoading(true);
-    setTurntableFallbackLoading(true);
+    setVideoLoaded(false);
+    setTurntableFallbackReady(false);
+    setRendersReady(false);
+    setLoadedRenderCount(0);
     setPdfLoading(true);
     setPdfSessionKey(Date.now());
   }, [project]);
-
-  useEffect(() => {
-    if (activeTab === "asset-turntable") {
-      setVideoLoading(true);
-    }
-  }, [activeTab, project?.turntableVideoPath]);
 
   useEffect(() => {
     if (isMobile && !project) {
@@ -137,7 +133,7 @@ export default function ProjectDetailPage() {
     return () => {
       isCancelled = true;
     };
-  }, [project, renderImages, activeTab]);
+  }, [project, renderImages]);
 
   if (!project) {
     return <Navigate to="/" replace />;
@@ -147,7 +143,7 @@ export default function ProjectDetailPage() {
   const currentImage = renderImages[activeRenderIndex % totalImages] ?? project.imagePath;
 
   const renderReady = renderImages.length === 0 || rendersReady;
-  const turntableReady = !project.turntableVideoPath || (!videoLoading && !videoFailed) || (videoFailed && !turntableFallbackLoading);
+  const turntableReady = !project.turntableVideoPath || videoLoaded || (videoFailed && turntableFallbackReady);
   const pdfReady = !pdfLoading;
   const pageLoading = !(renderReady && turntableReady && pdfReady);
   const totalLoadingSteps = 1 + (project.turntableVideoPath ? 1 : 0) + (renderImages.length > 0 ? 1 : 0);
@@ -285,11 +281,11 @@ export default function ProjectDetailPage() {
                           muted
                           playsInline
                           preload="none"
-                          onLoadedData={() => setVideoLoading(false)}
-                          onCanPlay={() => setVideoLoading(false)}
+                          onLoadedData={() => setVideoLoaded(true)}
+                          onCanPlay={() => setVideoLoaded(true)}
                           onError={() => {
-                            setVideoLoading(false);
                             setVideoFailed(true);
+                            setVideoLoaded(true);
                           }}
                         />
                       </div>
@@ -301,8 +297,8 @@ export default function ProjectDetailPage() {
                           className="max-h-full max-w-full object-contain"
                           loading="lazy"
                           decoding="async"
-                          onLoad={() => setTurntableFallbackLoading(false)}
-                          onError={() => setTurntableFallbackLoading(false)}
+                          onLoad={() => setTurntableFallbackReady(true)}
+                          onError={() => setTurntableFallbackReady(true)}
                         />
                       </div>
                     )}
