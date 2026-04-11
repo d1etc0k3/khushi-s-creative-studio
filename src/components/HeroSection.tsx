@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useTypewriter } from "@/hooks/useTypewriter";
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import { LoadingBarOverlay } from "@/components/ui/LoadingBarOverlay";
+import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   const [portraitLoading, setPortraitLoading] = useState(true);
@@ -14,7 +14,23 @@ export function HeroSection() {
   });
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-20">
+    <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
+      <div className="absolute right-6 top-6 z-20 flex flex-wrap items-center justify-end gap-3">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+        >
+          Explore My Work
+        </Button>
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+        >
+          Contact
+        </Button>
+      </div>
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center -translate-y-5 md:-translate-y-9">
         {/* Left - Portrait */}
         <motion.div
@@ -84,30 +100,6 @@ export function HeroSection() {
               )
             )}
           </div>
-
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <Link
-              to="#projects"
-              className="inline-flex items-center gap-2 text-primary hover:text-accent transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              <span className="text-lg font-bold">Explore My Work</span>
-              <motion.span
-                animate={{ y: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                ↓
-              </motion.span>
-            </Link>
-          </motion.div>
         </motion.div>
       </div>
     </section>

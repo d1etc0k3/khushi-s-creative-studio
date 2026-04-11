@@ -20,7 +20,17 @@ export default function ProjectDetailPage() {
   const [turntableFallbackLoading, setTurntableFallbackLoading] = useState(true);
   const [pdfLoading, setPdfLoading] = useState(true);
   const [pdfSessionKey, setPdfSessionKey] = useState(() => Date.now());
+  const [isMobile, setIsMobile] = useState(false);
   const preloadedProjectsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const syncViewport = () => setIsMobile(mediaQuery.matches);
+
+    syncViewport();
+    mediaQuery.addEventListener("change", syncViewport);
+    return () => mediaQuery.removeEventListener("change", syncViewport);
+  }, []);
 
   useEffect(() => {
     if (!project) {
@@ -126,7 +136,7 @@ export default function ProjectDetailPage() {
   }, [project, renderImages, activeTab]);
 
   if (!project) {
-    return <Navigate to="/projects" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const totalImages = Math.max(renderImages.length, 1);
@@ -160,7 +170,10 @@ export default function ProjectDetailPage() {
     setTouchStartX(null);
   };
 
-  const pdfSrc = `${project.pdfPath}${project.pdfPath.includes("?") ? "&" : "?"}session=${pdfSessionKey}#view=FitH&toolbar=0&navpanes=0&statusbar=0`;
+  const pdfViewerConfig = isMobile
+    ? "#view=FitH&toolbar=1&navpanes=0&scrollbar=1"
+    : "#view=FitH&toolbar=0&navpanes=0&statusbar=0";
+  const pdfSrc = `${project.pdfPath}${project.pdfPath.includes("?") ? "&" : "?"}session=${pdfSessionKey}${pdfViewerConfig}`;
   const renderProgress = totalImages > 0 ? (Math.min(loadedRenderCount, totalImages) / totalImages) * 100 : 100;
 
   return (
@@ -178,11 +191,11 @@ export default function ProjectDetailPage() {
 
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="fixed top-6 left-6 z-50">
         <Link
-          to="/projects"
+          to="/"
           className="flex items-center gap-2 px-4 py-2 glass rounded-full hover:glow-soft transition-all group"
         >
           <ArrowLeft className="w-4 h-4 text-primary group-hover:text-accent transition-colors" />
-          <span className="text-sm text-foreground">Back to Projects</span>
+          <span className="text-sm text-foreground">Back to Home</span>
         </Link>
       </motion.div>
 
@@ -338,14 +351,14 @@ export default function ProjectDetailPage() {
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.16 }}
-            className="glass rounded-2xl overflow-hidden min-h-[420px] lg:min-h-0 h-[70vh] lg:h-full"
+            className="glass rounded-2xl overflow-hidden min-h-[460px] lg:min-h-0 h-[82vh] md:h-[74vh] lg:h-full"
           >
-            <div className="relative h-full w-full">
+            <div className="relative h-full w-full overflow-auto overscroll-contain">
               <LoadingBarOverlay visible={pdfLoading} label="Loading PDF..." />
               <iframe
                 src={pdfSrc}
                 title={`${project.title} PDF`}
-                className="w-full h-full"
+                className="w-full h-full min-h-[78vh] md:min-h-0"
                 style={{ border: "none" }}
                 loading="lazy"
                 onLoad={() => setPdfLoading(false)}
