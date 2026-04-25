@@ -26,7 +26,7 @@ export function ProjectsSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 md:gap-10">
-          {projects.slice(0, 2).map((project, index) => {
+          {projects.slice(0, 4).map((project, index) => {
             const peekOne = project.renderImages[0] ?? project.imagePath;
             const peekTwo = project.renderImages[1] ?? project.imagePath;
 

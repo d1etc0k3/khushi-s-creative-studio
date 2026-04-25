@@ -24,6 +24,7 @@ export interface Project {
   imagePath: string;
   pdfPath: string;
   turntableVideoPath?: string;
+  turntableLabel?: string;
   renderImages: string[];
   renders: string;
   mesh: string;
@@ -100,5 +101,51 @@ export const projects: Project[] = [
       "This project is a high-detail 3D recreation of the Ford GT, focusing on precision hard-surface modeling and surface continuity.",
     mesh:
       "Quad-dominant topology with controlled edge flow to ensure smooth curvature, clean reflections, and sharp panel definition.",
+  },
+  {
+    id: "metro-exodus",
+    title: "Metro Exodus",
+    shortDescription: "Post-Apocalyptic Environment",
+    type: "3d",
+    imagePath: withBase("images/metro.webp"),
+    pdfPath: withBase("metro.pdf"),
+    renderImages: [
+      withBase("images/metro/1.webp"),
+      withBase("images/metro/2.webp"),
+      withBase("images/metro/4.webp"),
+      withBase("images/metro/5.webp"),
+      withBase("images/metro/6.webp"),
+      withBase("images/metro/7.webp"),
+      withBase("images/metro/8.webp"),
+      withBase("images/metro/9.webp"),
+    ],
+    renders:
+      "An immersive post-apocalyptic environment inspired by Metro Exodus, featuring detailed environmental storytelling and atmospheric lighting.",
+    mesh:
+      "Optimized geometry with careful attention to scale and proportion, designed for real-time performance with complex material workflows.",
+  },
+  {
+    id: "alley",
+    title: "What the Alley Remembers",
+    shortDescription: "Urban Narrative Environment",
+    type: "3d",
+    imagePath: withBase("images/alley.webp"),
+    pdfPath: withBase("alley.pdf"),
+    turntableVideoPath: withBase("videos/alley.mp4"),
+    turntableLabel: "Movie Render",
+    renderImages: [
+      withBase("images/alley/1.webp"),
+      withBase("images/alley/2.webp"),
+      withBase("images/alley/3.webp"),
+      withBase("images/alley/4.webp"),
+      withBase("images/alley/5.webp"),
+      withBase("images/alley/6.webp"),
+      withBase("images/alley/7.webp"),
+      withBase("images/alley/8.webp"),
+    ],
+    renders:
+      "A narrative-driven urban environment that tells a story through environmental details and compositional elements.",
+    mesh:
+      "Hand-crafted elements with an emphasis on believable decay and weathering, creating a lived-in aesthetic.",
   },
 ];

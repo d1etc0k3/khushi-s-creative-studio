@@ -37,7 +37,8 @@ export default function ProjectDetailPage() {
     if (!project) {
       return;
     }
-    setActiveTab("asset-turntable");
+    const defaultTab = project.turntableVideoPath ? "asset-turntable" : "renders";
+    setActiveTab(defaultTab);
     setActiveRenderIndex(0);
     setVideoFailed(false);
     setVideoLoaded(false);
@@ -247,16 +248,22 @@ export default function ProjectDetailPage() {
             transition={{ delay: 0.1 }}
             className="glass rounded-2xl p-3 md:p-4 flex flex-col min-h-[360px] lg:min-h-0"
           >
-            <div className="grid grid-cols-2 gap-2 rounded-xl border border-border/50 p-1">
-              <button
-                type="button"
-                onClick={() => setActiveTab("asset-turntable")}
-                className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-                  activeTab === "asset-turntable" ? "bg-primary text-primary-foreground" : "bg-background/60 text-foreground"
-                }`}
-              >
-                Asset Turntable
-              </button>
+            <div className={`grid gap-2 rounded-xl border border-border/50 p-1 ${
+              project.turntableVideoPath ? "grid-cols-2" : "grid-cols-1"
+            }`}>
+              {project.turntableVideoPath && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("asset-turntable")}
+                  className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                    activeTab === "asset-turntable"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background/60 text-foreground"
+                  }`}
+                >
+                  {project.turntableLabel || "Asset Turntable"}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setActiveTab("renders")}

@@ -43,14 +43,14 @@ export function ContactSection() {
               </a>
             </div>
             <div className="space-y-3 min-w-0 rounded-3xl border border-white/10 bg-background/60 p-6 text-center">
-              <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Resume</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">About Me</p>
               <a
                 href="/resume_.pdf"
                 target="_blank"
                 rel="noreferrer"
                 className="block text-lg font-semibold text-foreground hover:text-primary transition-colors break-words whitespace-normal"
               >
-                Open Resume
+                Resume
               </a>
             </div>
           </div>
